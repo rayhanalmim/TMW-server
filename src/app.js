@@ -11,10 +11,8 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zq9jmri.mongodb.net/?retryWrites=true&w=majority
-`;-
-
-
-mongoose.connect(uri, { dbName: process.env.DB_NAME });
+`;
+-mongoose.connect(uri, { dbName: process.env.DB_NAME });
 
 const db = mongoose.connection;
 
@@ -41,6 +39,10 @@ const userCollection = mongoose.model(
 app.get("/getUser", async (req, res) => {
   const userId = req.query.userId;
   const user = await userCollection.findById(userId);
+  res.send(user);
+});
+app.get("/allUser", async (req, res) => {
+  const user = await userCollection.find();
   res.send(user);
 });
 
