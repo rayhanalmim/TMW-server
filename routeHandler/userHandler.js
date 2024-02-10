@@ -3,23 +3,29 @@ const router = express.Router();
 const mongoose = require("mongoose");
  
 
-const userCollection = mongoose.model(
-  "userCollection",
-  new mongoose.Schema({}, { strict: false })
-);
+const userSchema = require("../schemas/userSchemas");
+
+ 
+
+const userCollection = new mongoose.model("userCollection", userSchema);
+
+// const userCollection = mongoose.model(
+//   "userCollection",
+//   new mongoose.Schema({}, { strict: false })
+// );
 
 router.get("/getUser", async (req, res) => {
   const userId = req.query.userId;
   const user = await userCollection.findById(userId);
   res.send(user);
 });
-
+//ok
 router.get("/", async (req, res) => {
   const users = await userCollection.find();
   res.send(users);
 });
 
-router.post("/createUser", async (req, res) => {
+router.post("/", async (req, res) => {
   const user = req.body;
   const create = await userCollection.create(user);
   res.send(create);
