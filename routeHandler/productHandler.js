@@ -5,8 +5,12 @@ const { ObjectId } = require("mongodb");
 const productSchema = require("../schemas/productSchemas");
 
  
+const Product = mongoose.model(
+  "Product",
+  new mongoose.Schema({}, { strict: false })
+);
 
-const Product = new mongoose.model("Product", productSchema);
+// const Product = new mongoose.model("Product", productSchema);
 
 // Handle GET request for all products
 router.get("/", async (req, res) => {
