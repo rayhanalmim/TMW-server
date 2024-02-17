@@ -5,8 +5,35 @@ const mongoose = require("mongoose");
 const cardCollection = mongoose.model('cardItem', new mongoose.Schema({}, { strict: false }));
 
 router.post("/", async (req, res) => {
-    const { item, user } = req.query;
-    res.send('comming soon');
+    const { userEmail } = req.query;
+    const item = req.body;
+    console.log(item, userEmail);
+    const isitemExist = await cardCollection.findOne({
+        $and: [
+            { user: userEmail },
+            { cardItems: { $elemMatch: { _id: item._id } } }
+        ]
+    });
+    if (isitemExist) {
+        res.status(202).send({ message: "item already listed in database" });
+    } else {
+        const isCardExist = await cardCollection.findOne({ user: userEmail });
+        if (isCardExist) {
+            const addItem = await cardCollection.updateOne(
+                { user: userEmail },
+                {
+                    $push: { cardItems: item },
+                }
+            );
+            return res.status(201).send(addItem);
+        } else {
+            const create = await cardCollection.create({
+                user: userEmail,
+                cardItems: [item]
+            })
+            return res.status(200).send(create)
+        }
+    }
 });
 
 router.get("/", async (req, res) => {
