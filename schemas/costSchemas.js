@@ -8,7 +8,10 @@ const costSchema = new mongoose.Schema({
   },
   costDate: {
     type: Date,
-    required: true,
+    default: function() {
+      // Set default date to Bangladeshi local time
+      return moment().tz('Asia/Dhaka').toDate();
+    },
   },
   costIssues: {
     type: String,
