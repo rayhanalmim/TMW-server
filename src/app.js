@@ -40,7 +40,7 @@ app.use("/card", cardHandler);
 // --------------------------------------localApi-------------------------------------------
 
 app.get("/", (req, res) => {
-  res.send("Humayon traders server is  running");
+  res.send("Database server is  connected");
 });
 
 app.listen(port, () => {
