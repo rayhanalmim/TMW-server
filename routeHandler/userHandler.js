@@ -11,11 +11,32 @@ const userCollection = mongoose.model(
   new mongoose.Schema({}, { strict: false })
 );
 
+router.get("/admin/:email",  async (req, res) => {
+  const email = req.params.email;
+  const user = await userCollection.findOne({ email: email }); 
+  let admin = false;
+  if (user) {
+    admin = user?.userType === "isAdmin";
+  }
+  res.send({ admin });
+});
+router.get("/agent/:email",  async (req, res) => {
+  const email = req.params.email;
+  const user = await userCollection.findOne({ email: email }); 
+  let agent = false;
+  if (user) {
+    agent = user?.userType === "isAgent";
+  }
+  res.send({ agent });
+});
+
+
 router.get("/getUser", async (req, res) => {
   const userId = req.query.userId;
   const user = await userCollection.findById(userId);
   res.send(user);
 });
+
 //ok
 router.get("/", async (req, res) => {
   const users = await userCollection.find();
