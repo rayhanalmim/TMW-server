@@ -1,24 +1,42 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
- 
 
 const userSchema = require("../schemas/userSchemas");
 
- 
+// const userCollection = new mongoose.model("userCollection", userSchema);
 
-const userCollection = new mongoose.model("userCollection", userSchema);
+const userCollection = mongoose.model(
+  "userCollection",
+  new mongoose.Schema({}, { strict: false })
+);
 
-// const userCollection = mongoose.model(
-//   "userCollection",
-//   new mongoose.Schema({}, { strict: false })
-// );
+router.get("/admin/:email",  async (req, res) => {
+  const email = req.params.email;
+  const user = await userCollection.findOne({ email: email }); 
+  let admin = false;
+  if (user) {
+    admin = user?.userType === "isAdmin";
+  }
+  res.send({ admin });
+});
+router.get("/agent/:email",  async (req, res) => {
+  const email = req.params.email;
+  const user = await userCollection.findOne({ email: email }); 
+  let agent = false;
+  if (user) {
+    agent = user?.userType === "isAgent";
+  }
+  res.send({ agent });
+});
+
 
 router.get("/getUser", async (req, res) => {
   const userId = req.query.userId;
   const user = await userCollection.findById(userId);
   res.send(user);
 });
+
 //ok
 router.get("/", async (req, res) => {
   const users = await userCollection.find();
@@ -68,9 +86,22 @@ router.post("/updateUser", async (req, res) => {
   res.send(update);
 });
 
-router.delete("/deleteUser", async (req, res) => {
-  const id = req.query.userId;
-  const result = await userCollection.deleteOne({ _id: mongoose.Types.ObjectId(id) });
+router.delete("/:id", async (req, res) => {
+  const id = req.params.id;
+  const result = await userCollection.deleteOne({ _id: id });
+  res.send(result);
+});
+
+//change rale
+router.patch("/:id", async (req, res) => {
+  const id = req.params.id;
+  const userType = req.body.role;
+  console.log(id, userType);
+
+  const filter = { _id: id };
+  const update = { $set: { userType } };
+  const result = await userCollection.updateOne(filter, update);
+
   res.send(result);
 });
 
