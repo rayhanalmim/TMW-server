@@ -37,8 +37,13 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-    const { item, user } = req.query;
-    res.send('comming soon');
+    const { user } = req.query;
+    const isCardExist = await cardCollection.findOne({ user: userEmail });
+    if(isCardExist){
+        return res.send(isCardExist)
+    }else{
+        return res.status(201).send({message: 'no item found'})
+    }
 });
 
 module.exports = router;
