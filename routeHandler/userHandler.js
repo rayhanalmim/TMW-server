@@ -10,19 +10,20 @@ const userCollection = mongoose.model(
   "userCollection",
   new mongoose.Schema({}, { strict: false })
 );
-
-router.get("/admin/:email",  async (req, res) => {
+//ok
+router.get("/admin/:email", async (req, res) => {
   const email = req.params.email;
-  const user = await userCollection.findOne({ email: email }); 
+  const user = await userCollection.findOne({ email: email });
   let admin = false;
   if (user) {
     admin = user?.userType === "isAdmin";
   }
   res.send({ admin });
 });
-router.get("/agent/:email",  async (req, res) => {
+//ok
+router.get("/agent/:email", async (req, res) => {
   const email = req.params.email;
-  const user = await userCollection.findOne({ email: email }); 
+  const user = await userCollection.findOne({ email: email });
   let agent = false;
   if (user) {
     agent = user?.userType === "isAgent";
@@ -30,10 +31,9 @@ router.get("/agent/:email",  async (req, res) => {
   res.send({ agent });
 });
 
-
-router.get("/getUser", async (req, res) => {
-  const userId = req.query.userId;
-  const user = await userCollection.findById(userId);
+router.get("/:email", async (req, res) => {
+  const email = req.params.email;
+  const user = await userCollection.findOne({ email: email });
   res.send(user);
 });
 
@@ -42,7 +42,7 @@ router.get("/", async (req, res) => {
   const users = await userCollection.find();
   res.send(users);
 });
-
+//ok
 router.post("/", async (req, res) => {
   const user = req.body;
   const create = await userCollection.create(user);
@@ -85,19 +85,18 @@ router.post("/updateUser", async (req, res) => {
   );
   res.send(update);
 });
-
+//ok
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
   const result = await userCollection.deleteOne({ _id: id });
   res.send(result);
 });
 
-//change rale
+//ok
 router.patch("/:id", async (req, res) => {
   const id = req.params.id;
   const userType = req.body.role;
   console.log(id, userType);
-
   const filter = { _id: id };
   const update = { $set: { userType } };
   const result = await userCollection.updateOne(filter, update);
