@@ -21,9 +21,8 @@ const productSchema = mongoose.Schema({
   },
   date: {
     type: Date,
-    default: function() {
-      // Set default date to Bangladeshi local time
-      return moment().tz('Asia/Dhaka').toDate();
+    default: function () {
+      return moment().tz("Asia/Dhaka").toDate();
     },
   },
 });

@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
 const productSchema = require("../schemas/productSchemas");
 
- 
 const Product = mongoose.model(
   "Product",
   new mongoose.Schema({}, { strict: false })
@@ -52,6 +51,31 @@ router.delete("/:id", async (req, res) => {
 
     res.status(200).json({
       message: "Product deleted successfully",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+});
+
+// Handle PUT request to update a product by ID
+router.put("/:id", async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    const existingProduct = await Product.findOne({
+      _id: new ObjectId(productId),
+    });
+    if (!existingProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    await Product.updateOne({ _id: existingProduct._id }, { $set: req.body });
+
+    res.status(200).json({
+      message: "Product updated successfully",
     });
   } catch (err) {
     console.error(err);
