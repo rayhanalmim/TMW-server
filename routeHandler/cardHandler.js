@@ -38,7 +38,7 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
     const { user } = req.query;
-    const isCardExist = await cardCollection.findOne({ user: userEmail });
+    const isCardExist = await cardCollection.findOne({ user: user });
     if(isCardExist){
         return res.send(isCardExist)
     }else{
