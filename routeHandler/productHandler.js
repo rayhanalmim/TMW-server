@@ -80,4 +80,21 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.get("/searchbyName/:name", async (req, res) => {
+  try {
+    const productName = req.params.name;
+
+    if (!productName) {
+      return res.status(400).json({ error: "Product name is required" });
+    }
+
+    const regex = new RegExp(productName, "i");
+    const products = await Product.find({ productName: { $regex: regex } });
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching products by name:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 module.exports = router;
