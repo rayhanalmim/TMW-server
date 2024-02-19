@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-
-const costSchema = require("../schemas/costSchemas.js");
-const Cost = mongoose.model("Cost", costSchema);
+const Cost = require("../schemas/costSchemas.js");
 
 router.get("/getCost", async (req, res) => {
   try {

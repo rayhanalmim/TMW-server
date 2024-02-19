@@ -2,8 +2,7 @@ const express = require("express");
 const { ObjectId } = require("mongodb");
 const router = express.Router();
 const mongoose = require("mongoose");
-
-const cardCollection = mongoose.model('cardItem', new mongoose.Schema({}, { strict: false }));
+const cardCollection = require("../schemas/cardSchema");
 
 router.post("/", async (req, res) => {
     const { userEmail } = req.query;
