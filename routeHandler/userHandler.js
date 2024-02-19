@@ -30,12 +30,46 @@ router.get("/agent/:email", async (req, res) => {
   }
   res.send({ agent });
 });
+//ok
+router.get("/:id", async (req, res) => {
+  try {
+    const result = await userCollection.findOne({
+      _id: req.params.id,
+    });
 
-router.get("/:email", async (req, res) => {
-  const email = req.params.email;
-  const user = await userCollection.findOne({ email: email });
-  res.send(user);
+    if (result) {
+      res.json(result);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
+
+// Route to get user by email
+router.get("/email/:email", async (req, res) => {
+  const userEmail = req.params.email;
+ 
+  try {
+    
+
+    const user = await userCollection.findOne({ email: userEmail });
+
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 //ok
 router.get("/", async (req, res) => {
@@ -49,42 +83,6 @@ router.post("/", async (req, res) => {
   res.send(create);
 });
 
-router.post("/updateUser", async (req, res) => {
-  const userId = req.query.userId;
-  const {
-    email,
-    photoURL,
-    displayName,
-    userRole,
-    totalBuy,
-    due,
-    address,
-    nidCardNumber,
-    phoneNumber,
-    reference,
-    code,
-  } = req.body;
-
-  const update = await userCollection.updateOne(
-    { _id: mongoose.Types.ObjectId(userId) },
-    {
-      $set: {
-        email: email,
-        photoURL: photoURL,
-        displayName: displayName,
-        userRole: userRole,
-        totalBuy: totalBuy,
-        due: due,
-        address: address,
-        nidCardNumber: nidCardNumber,
-        phoneNumber: phoneNumber,
-        reference: reference,
-        code: code,
-      },
-    }
-  );
-  res.send(update);
-});
 //ok
 router.delete("/:id", async (req, res) => {
   const id = req.params.id;
