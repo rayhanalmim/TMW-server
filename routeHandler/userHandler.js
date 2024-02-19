@@ -94,12 +94,49 @@ router.delete("/:id", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   const id = req.params.id;
   const userType = req.body.role;
-  console.log(id, userType);
+ 
   const filter = { _id: id };
   const update = { $set: { userType } };
   const result = await userCollection.updateOne(filter, update);
 
   res.send(result);
 });
+
+
+
+// Route to get the total number of agents
+router.get("/totalAgents", async (req, res) => {
+  try {
+    const totalAgents = await userCollection.countDocuments({ userType: "isAgent" });
+    res.json({ totalAgents });
+  } catch (error) {
+    console.error("Error counting agents:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// Route to get the total number of admins
+router.get("/totalAdmins", async (req, res) => {
+  console.log('hit admin')
+  try {
+    const totalAdmins = await userCollection.countDocuments({ userType: "isAdmin" });
+    res.json({ totalAdmins });
+  } catch (error) {
+    console.error("Error counting admins:", error);
+    res.status(500).json({ error: "Internal Server Error", details: error.message });
+  }
+});
+
+// Route to get the total number of users
+router.get("/totalUsers", async (req, res) => {
+  try {
+    const totalUsers = await userCollection.countDocuments();
+    res.json({ totalUsers });
+  } catch (error) {
+    console.error("Error counting users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 
 module.exports = router;

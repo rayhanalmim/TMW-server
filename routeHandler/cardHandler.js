@@ -7,7 +7,7 @@ const cardCollection = mongoose.model('cardItem', new mongoose.Schema({}, { stri
 router.post("/", async (req, res) => {
     const { userEmail } = req.query;
     const item = req.body;
-    console.log(item, userEmail);
+ 
     const isitemExist = await cardCollection.findOne({
         $and: [
             { user: userEmail },
