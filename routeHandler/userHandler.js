@@ -1,15 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const userCollection = require("../schemas/userSchemas");
 
-const userSchema = require("../schemas/userSchemas");
 
-// const userCollection = new mongoose.model("userCollection", userSchema);
-
-const userCollection = mongoose.model(
-  "userCollection",
-  new mongoose.Schema({}, { strict: false })
-);
 //ok
 router.get("/admin/:email", async (req, res) => {
   const email = req.params.email;
@@ -48,16 +42,12 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-
 // Route to get user by email
 router.get("/email/:email", async (req, res) => {
   const userEmail = req.params.email;
  
   try {
-    
-
     const user = await userCollection.findOne({ email: userEmail });
-
     if (user) {
       res.json(user);
     } else {
@@ -68,8 +58,6 @@ router.get("/email/:email", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
 
 //ok
 router.get("/", async (req, res) => {

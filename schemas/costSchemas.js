@@ -24,7 +24,9 @@ const costSchema = new mongoose.Schema({
   },
 });
 
+const Cost = mongoose.model("Cost", costSchema);
+
 // Add any additional settings or methods if needed
-module.exports = costSchema;
+module.exports = Cost;
 
 
