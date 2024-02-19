@@ -30,7 +30,7 @@ router.get("/agent/:email", async (req, res) => {
   }
   res.send({ agent });
 });
-
+//ok
 router.get("/:id", async (req, res) => {
   try {
     const result = await userCollection.findOne({
@@ -47,6 +47,29 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+// Route to get user by email
+router.get("/email/:email", async (req, res) => {
+  const userEmail = req.params.email;
+ 
+  try {
+    
+
+    const user = await userCollection.findOne({ email: userEmail });
+
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 
 //ok
 router.get("/", async (req, res) => {
