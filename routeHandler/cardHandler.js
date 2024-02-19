@@ -1,4 +1,5 @@
 const express = require("express");
+const { ObjectId } = require("mongodb");
 const router = express.Router();
 const mongoose = require("mongoose");
 
@@ -45,5 +46,15 @@ router.get("/", async (req, res) => {
         return res.status(201).send({message: 'no item found'})
     }
 });
+
+router.delete('/delete', async(req, res)=>{
+    const {id, user} = req.query;
+    console.log(id, user);
+    const remove = await cardCollection.updateOne(
+        { user: user }, // Assuming this is how you identify the user
+        { $pull: { cardItems: { _id: id } } }
+      )
+    res.send(remove);
+})
 
 module.exports = router;
