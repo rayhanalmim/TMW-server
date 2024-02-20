@@ -12,6 +12,7 @@ router.post('/', async (req, res) => {
     let totalSellPrice = totalPrice;
     const month = new Date().toISOString().substring(0, 7);
     const year = new Date().toISOString().substring(0, 4);
+    let purchesProductCollection = [];
 
     // console.log(sellerEmail , buyerId , discount, due, totalPrice, items)
 
@@ -26,17 +27,6 @@ router.post('/', async (req, res) => {
         totalSellPrice = totalSellPrice - due;
     }
 
-    //  items.forEach(async(item) => {
-    //     const {_id, quantity, productName, ownerEmail, productPrice, imageURL, ProductType} = item; //Buy Product
-
-    //     const storedProduct = await Product.findOne({_id: new ObjectId(_id)});
-    //     console.log(storedProduct);
-    //     if(storedProduct.productQuantity < quantity){
-    //         console.log("gittttttttttttttttttttttttttttttttttttttttttttttt");
-    //         return res.status(202).send({message: `${productName} is out of stock`})
-    //     }
-    // });
-
     // --------------------checkProductStock:
     for (const item of items) {
         const { _id, quantity, productName } = item;
@@ -50,6 +40,15 @@ router.post('/', async (req, res) => {
     // ---------------stockOutAndOtherFunctionality:
     for (const item of items) {
         const { _id, quantity, productName, ownerEmail, productPrice, imageURL, ProductType } = item;
+
+        const obj = {
+            productName: productName,
+            quantity: quantity,
+            productImage: imageURL,
+            unitPrice: productPrice
+        }
+
+        purchesProductCollection.push(obj);
 
         const storedProduct = await Product.findOne({ _id: new ObjectId(_id) });
 
@@ -141,6 +140,15 @@ router.post('/', async (req, res) => {
         );
     }
 
+    // ----------------------addDueAmmout
+    if(due){
+        const agent = await userCollection.findOne({ _id: new ObjectId(buyerId) });
+        const update = await userCollection.updateOne(
+            { _id: new ObjectId(buyerId) },
+            { $set: { totalDueAmmout: agent.totalDueAmmout + parseInt(due) } },
+          );
+    };
+
     res.send('success');
 })
 
@@ -151,6 +159,6 @@ module.exports = router;
 // 2. return error if product out of stock || done
 // 2. calculate total price and minus if discount and due ammount exist || done
 // 2. add price in total sell, monthly sell and yearly sell in company info || done
-// 3. add purches product in agent product collection
-// 4. add due ammount in agent collection if exists
+// 3. add purches product in agent product collection || done
+// 4. add due ammount in agent collection if exists || done 
 // 5. push every purches product in sell collection with date
