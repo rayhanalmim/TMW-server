@@ -37,6 +37,7 @@ router.post('/', async(req, res)=>{
     //     }
     // });
 
+    // --------------------checkProductStock:
     for (const item of items) {
         const {_id, quantity, productName} = item;
 
@@ -44,6 +45,18 @@ router.post('/', async(req, res)=>{
         if (!storedProduct || storedProduct.productQuantity < quantity) {
             return res.status(202).send({message: `${productName} is out of stock`});
         }
+    }
+
+    // ---------------stockOutAndOtherFunctionality:
+    for (const item of items) {
+        const {_id, quantity, productName, ownerEmail, productPrice, imageURL, ProductType} = item; 
+
+        const storedProduct = await Product.findOne({_id: new ObjectId(_id)});
+
+        const stockOutProduct = await Product.updateOne(
+            { _id: new Object(_id) },
+            { $set: { productQuantity: storedProduct.productQuantity - quantity } },
+          );
     }
 
     res.send('success');
