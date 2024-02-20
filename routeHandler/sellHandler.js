@@ -6,8 +6,8 @@ const { ObjectId } = require("mongodb");
 const companyInfo = require("../schemas/companyCollection");
 const Product = require("../schemas/productSchemas");
 
-router.post('/', async(req, res)=>{
-    const {sellerEmail , buyerId , discount, due, totalPrice} = req.query;
+router.post('/', async (req, res) => {
+    const { sellerEmail, buyerId, discount, due, totalPrice } = req.query;
     const items = req.body;
     let totalSellPrice = totalPrice;
     const month = new Date().toISOString().substring(0, 7);
@@ -15,14 +15,14 @@ router.post('/', async(req, res)=>{
 
     // console.log(sellerEmail , buyerId , discount, due, totalPrice, items)
 
-    if(!buyerId){
-        return res.status(201).send({message: "please select a valid agent"})
+    if (!buyerId) {
+        return res.status(201).send({ message: "please select a valid agent" })
     }
-    
-    if(discount){
+
+    if (discount) {
         totalSellPrice = totalSellPrice - discount;
     }
-    if(due){
+    if (due) {
         totalSellPrice = totalSellPrice - due;
     }
 
@@ -39,23 +39,97 @@ router.post('/', async(req, res)=>{
 
     // --------------------checkProductStock:
     for (const item of items) {
-        const {_id, quantity, productName} = item;
+        const { _id, quantity, productName } = item;
 
-        const storedProduct = await Product.findOne({_id: new ObjectId(_id)});
+        const storedProduct = await Product.findOne({ _id: new ObjectId(_id) });
         if (!storedProduct || storedProduct.productQuantity < quantity) {
-            return res.status(202).send({message: `${productName} is out of stock`});
+            return res.status(202).send({ message: `${productName} is out of stock` });
         }
     }
 
     // ---------------stockOutAndOtherFunctionality:
     for (const item of items) {
-        const {_id, quantity, productName, ownerEmail, productPrice, imageURL, ProductType} = item; 
+        const { _id, quantity, productName, ownerEmail, productPrice, imageURL, ProductType } = item;
 
-        const storedProduct = await Product.findOne({_id: new ObjectId(_id)});
+        const storedProduct = await Product.findOne({ _id: new ObjectId(_id) });
 
+        // ---------------------stockOut
         const stockOutProduct = await Product.updateOne(
             { _id: new Object(_id) },
             { $set: { productQuantity: storedProduct.productQuantity - quantity } },
+        );
+
+    };
+
+    // -------------------addMonthlyYearlyAndTotal
+    const currentMonthCollection = await companyInfo.findOne({ companyInfo: 'adminCollection', monthlySellAmount: { $elemMatch: { month: month } } })
+
+    const currentYearCollection = await companyInfo.findOne({ companyInfo: 'adminCollection', yearlySellAmount: { $elemMatch: { year: year } } })
+
+    const updateTotalPrice = await companyInfo.updateOne(
+        { companyInfo: "adminCollection" },
+        { $set: { totalSellAmmount: currentMonthCollection.totalSellAmmount + parseInt(totalPrice)} },
+      );
+
+    // ----------------------updateMonthlyPrice
+    if (currentMonthCollection) {
+        const updateQuery = {
+            companyInfo: 'adminCollection',
+            'monthlySellAmount': {
+                $elemMatch: {
+                    'month': month
+                }
+            }
+        };
+        const updateResult = await companyInfo.updateOne(
+            updateQuery,
+            {
+                $set: {
+                    'monthlySellAmount.$.totalAmmount': parseInt(currentMonthCollection.monthlySellAmount[0].totalAmmount) + parseInt(totalPrice),
+                }
+            }
+        );
+    }else{
+        const createObj = {
+            "month" : month,
+            "totalAmmount" : parseInt(totalPrice)
+        }
+        const update = await companyInfo.updateOne(
+            { companyInfo: "adminCollection" },
+            {
+              $push: { monthlySellAmount: createObj },
+            },
+          );
+    }
+
+    // -----------------------updateyearlyPrice
+    if (currentYearCollection) {
+        const updateQuery = {
+            companyInfo: 'adminCollection',
+            'yearlySellAmount': {
+                $elemMatch: {
+                    'year': year
+                }
+            }
+        };
+        const updateResult = await companyInfo.updateOne(
+            updateQuery,
+            {
+                $set: {
+                    'yearlySellAmount.$.totalAmount': parseInt(currentYearCollection.yearlySellAmount[0].totalAmount) + parseInt(totalPrice),
+                }
+            }
+        );
+    }else{
+        const createObj = {
+            "year" : year,
+            "totalAmount" : parseInt(totalPrice)
+        }
+        const update = await companyInfo.updateOne(
+            { companyInfo: "adminCollection" },
+            {
+              $push: { yearlySellAmount: createObj },
+            },
           );
     }
 
@@ -64,11 +138,11 @@ router.post('/', async(req, res)=>{
 
 module.exports = router;
 
-    // ---------Todo
-    // 1. productStock out
-    // 2. return error if product out of stock
-    // 2. calculate total price and minus if discount and due ammount exist
-    // 2. add price in total sell, monthly sell and yearly sell in company info
-    // 3. add purches product in agent product collection
-    // 4. add due ammount in agent collection if exists
-    // 5. push every purches product in sell collection with date
+// ---------Todo
+// 1. productStock out || done
+// 2. return error if product out of stock || done
+// 2. calculate total price and minus if discount and due ammount exist || done
+// 2. add price in total sell, monthly sell and yearly sell in company info || done
+// 3. add purches product in agent product collection
+// 4. add due ammount in agent collection if exists
+// 5. push every purches product in sell collection with date
