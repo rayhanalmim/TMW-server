@@ -55,5 +55,10 @@ router.delete('/delete', async(req, res)=>{
       )
     res.send(remove);
 })
+router.delete('/deleteAllCard', async(req, res)=>{
+    const {user} = req.query;
+    const remove = await cardCollection.deleteOne({ user: user });
+    res.send(remove);
+})
 
 module.exports = router;
