@@ -125,6 +125,30 @@ router.get("/totalUsers", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+router.put("/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const existingUser = await userCollection.findOneAndUpdate(
+      { _id: userId },
+      { $set: req.body },
+      { new: true }
+    );
+
+    if (!existingUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "User updated successfully",
+    });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({
+      error: "Internal Server Error",
+    });
+  }
+});
 
 
 module.exports = router;
