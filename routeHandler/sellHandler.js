@@ -5,9 +5,11 @@ const userCollection = require("../schemas/userSchemas");
 const { ObjectId } = require("mongodb");
 const companyInfo = require("../schemas/companyCollection");
 const Product = require("../schemas/productSchemas");
+const sellCollection = require("../schemas/sellCollection");
 
 router.post('/', async (req, res) => {
     const { sellerEmail, buyerId, discount, due, totalPrice } = req.query;
+    let beforeDiscount = totalPrice;
     const items = req.body;
     let totalSellPrice = totalPrice;
     const month = new Date().toISOString().substring(0, 7);
@@ -22,6 +24,7 @@ router.post('/', async (req, res) => {
 
     if (discount) {
         totalSellPrice = totalSellPrice - discount;
+        beforeDiscount = beforeDiscount - discount;
     }
     if (due) {
         totalSellPrice = totalSellPrice - due;
@@ -141,15 +144,32 @@ router.post('/', async (req, res) => {
     }
 
     // ----------------------addDueAmmout
+    const agent = await userCollection.findOne({ _id: new ObjectId(buyerId) });
     if(due){
-        const agent = await userCollection.findOne({ _id: new ObjectId(buyerId) });
         const update = await userCollection.updateOne(
             { _id: new ObjectId(buyerId) },
             { $set: { totalDueAmmout: agent.totalDueAmmout + parseInt(due) } },
           );
     };
 
-    res.send('success');
+    // -------------------addTotalPurchesInAgentCollection
+    const update = await userCollection.updateOne(
+        { _id: new ObjectId(buyerId) },
+        { $set: { totalPurchesAmmount: agent.totalPurchesAmmount + parseInt(beforeDiscount) } },
+      );
+
+    // ------------------------createSellCollection
+    const sellObj = {
+        sellerEmail: sellerEmail,
+        agetName: agent.displayName,
+        agentEmail: agent.email,
+        totalCost: parseInt(beforeDiscount),
+        paid: parseInt(totalSellPrice),
+        dueAmmount: parseInt(due),
+        purchesProducts: purchesProductCollection
+    }
+    const createSellCollection = await sellCollection.create(sellObj);
+    res.send(sellObj);
 })
 
 module.exports = router;
@@ -161,4 +181,4 @@ module.exports = router;
 // 2. add price in total sell, monthly sell and yearly sell in company info || done
 // 3. add purches product in agent product collection || done
 // 4. add due ammount in agent collection if exists || done 
-// 5. push every purches product in sell collection with date
+// 5. push every purches product in sell collection with date || done
