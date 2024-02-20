@@ -59,6 +59,14 @@ router.post('/', async (req, res) => {
             { $set: { productQuantity: storedProduct.productQuantity - quantity } },
         );
 
+        // --------------pushPurchesProductInAgentCollection
+        const update = await userCollection.updateOne(
+            { _id: new ObjectId(buyerId) },
+            {
+                $push: { purchesProductCollection: item },
+            },
+        );
+
     };
 
     // -------------------addMonthlyYearlyAndTotal
@@ -68,8 +76,8 @@ router.post('/', async (req, res) => {
 
     const updateTotalPrice = await companyInfo.updateOne(
         { companyInfo: "adminCollection" },
-        { $set: { totalSellAmmount: currentMonthCollection.totalSellAmmount + parseInt(totalPrice)} },
-      );
+        { $set: { totalSellAmmount: currentMonthCollection.totalSellAmmount + parseInt(totalPrice) } },
+    );
 
     // ----------------------updateMonthlyPrice
     if (currentMonthCollection) {
@@ -89,17 +97,17 @@ router.post('/', async (req, res) => {
                 }
             }
         );
-    }else{
+    } else {
         const createObj = {
-            "month" : month,
-            "totalAmmount" : parseInt(totalPrice)
+            "month": month,
+            "totalAmmount": parseInt(totalPrice)
         }
         const update = await companyInfo.updateOne(
             { companyInfo: "adminCollection" },
             {
-              $push: { monthlySellAmount: createObj },
+                $push: { monthlySellAmount: createObj },
             },
-          );
+        );
     }
 
     // -----------------------updateyearlyPrice
@@ -120,17 +128,17 @@ router.post('/', async (req, res) => {
                 }
             }
         );
-    }else{
+    } else {
         const createObj = {
-            "year" : year,
-            "totalAmount" : parseInt(totalPrice)
+            "year": year,
+            "totalAmount": parseInt(totalPrice)
         }
         const update = await companyInfo.updateOne(
             { companyInfo: "adminCollection" },
             {
-              $push: { yearlySellAmount: createObj },
+                $push: { yearlySellAmount: createObj },
             },
-          );
+        );
     }
 
     res.send('success');
