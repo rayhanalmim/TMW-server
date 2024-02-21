@@ -7,6 +7,7 @@ const companyInfo = require("../schemas/companyCollection");
 const Product = require("../schemas/productSchemas");
 const sellCollection = require("../schemas/sellCollection");
 const { route } = require("./cardHandler");
+require("dotenv").config();
 const { default: axios } = require("axios");
 
 router.post("/", async (req, res) => {
@@ -206,11 +207,13 @@ router.post("/", async (req, res) => {
     const createSellCollection = await sellCollection.create(sellObj);
 
     //-----------------------sendSms
+    
+    
     if(due){
-        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=OEQ7tzQC1PvOSZHK5w7L&type=text&number=${agent.phoneNo}&senderid=8809617617091&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}. You've paid ${parseInt(totalSellPrice)}, Due amount: ${parseInt(due)}.`);
+        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}. You've paid ${parseInt(totalSellPrice)}, Due amount: ${parseInt(due)}.`);
         console.log(response.data);
     }else{
-        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=OEQ7tzQC1PvOSZHK5w7L&type=text&number=${agent.phoneNo}&senderid=8809617617091&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}.`);
+        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SENDER_ID}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}.`);
         console.log(response.data);
     }
 
