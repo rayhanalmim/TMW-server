@@ -14,6 +14,7 @@ router.post("/", async (req, res) => {
   const items = req.body;
   let totalSellPrice = totalPrice;
   const month = new Date().toISOString().substring(0, 7);
+  const date = new Date().toISOString().substring(0, 10);
   const year = new Date().toISOString().substring(0, 4);
   let purchesProductCollection = [];
 
@@ -112,6 +113,7 @@ router.post("/", async (req, res) => {
         },
       },
     };
+    totalSellPrice
     const updateResult = await companyInfo.updateOne(updateQuery, {
       $set: {
         "monthlySellAmount.$.totalAmmount":
@@ -192,6 +194,7 @@ router.post("/", async (req, res) => {
   // ------------------------createSellCollection
   const sellObj = {
     sellerEmail: sellerEmail,
+    date: date,
     agetName: agent.displayName,
     agentId: agent._id,
     totalCost: parseInt(beforeDiscount),
@@ -213,8 +216,11 @@ router.post("/", async (req, res) => {
 // 5. push every purches product in sell collection with date || done
 //ok
 router.get("/", async (req, res) => {
-  const sellProduct = await sellCollection.find();
-  res.send(sellProduct);
-});
+ 
+    const sellProduct = await sellCollection.find();
+    res.send(sellProduct);
+  });
+
+ 
 
 module.exports = router;
