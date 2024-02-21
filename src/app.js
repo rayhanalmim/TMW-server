@@ -8,8 +8,8 @@ require("dotenv").config();
 const productHandler = require("../routeHandler/productHandler");
 const userHandler = require("../routeHandler/userHandler");
 const costHandler = require("../routeHandler/costHandler.js");
-const cardHandler = require("../routeHandler/cardHandler.js")
-const sellHandler = require("../routeHandler/sellHandler.js")
+const cardHandler = require("../routeHandler/cardHandler.js");
+const sellHandler = require("../routeHandler/sellHandler.js");
 
 app.use(cors());
 app.use(express.json());
@@ -37,7 +37,6 @@ app.use("/user", userHandler);
 app.use("/cost", costHandler);
 app.use("/card", cardHandler);
 app.use("/sell", sellHandler);
- 
 
 // --------------------------------------localApi-------------------------------------------
 
