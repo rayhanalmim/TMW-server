@@ -196,6 +196,7 @@ router.post("/", async (req, res) => {
     // ------------------------createSellCollection
     const sellObj = {
         sellerEmail: sellerEmail,
+        agentEmail: agent.email,
         date: date,
         agetName: agent.displayName,
         agentId: agent._id,
@@ -232,8 +233,15 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
 
     const sellProduct = await sellCollection.find();
+    sellProduct.reverse();
     res.send(sellProduct);
 });
+
+router.get('/memo', async(req, res)=>{
+    const {memoId} = req.query;
+    const sellProduct = await sellCollection.findById(memoId);
+    res.send(sellProduct);
+})
 
 
 
