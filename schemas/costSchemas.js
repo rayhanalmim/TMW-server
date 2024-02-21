@@ -4,13 +4,12 @@ const costSchema = new mongoose.Schema({
   cost: {
     type: Number,
     required: true,
-    min: 0,  
+    min: 0,
   },
   costDate: {
     type: Date,
-    default: function() {
-      // Set default date to Bangladeshi local time
-      return moment().tz('Asia/Dhaka').toDate();
+    default: function () {
+      return moment().tz("Asia/Dhaka").toDate();
     },
   },
   costIssues: {
@@ -19,7 +18,7 @@ const costSchema = new mongoose.Schema({
   },
   costType: {
     type: String,
-    enum: ["Daily", "Month"], 
+    enum: ["Daily", "Month"],
     required: true,
   },
 });
@@ -28,5 +27,3 @@ const Cost = mongoose.model("Cost", costSchema);
 
 // Add any additional settings or methods if needed
 module.exports = Cost;
-
-

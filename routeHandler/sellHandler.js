@@ -164,10 +164,17 @@ router.post("/", async (req, res) => {
 
   // ----------------------addDueAmmout
   const agent = await userCollection.findOne({ _id: new ObjectId(buyerId) });
+
   if (due) {
     const update = await userCollection.updateOne(
       { _id: new ObjectId(buyerId) },
       { $set: { totalDueAmmout: agent.totalDueAmmout + parseInt(due) } }
+    );
+  }
+  if (totalSellPrice) {
+    const update = await userCollection.updateOne(
+      { _id: new ObjectId(buyerId) },
+      { $set: { totalSellPrice: totalSellPrice } }
     );
   }
 
@@ -186,7 +193,7 @@ router.post("/", async (req, res) => {
   const sellObj = {
     sellerEmail: sellerEmail,
     agetName: agent.displayName,
-    agentEmail: agent.email,
+    agentId: agent._id,
     totalCost: parseInt(beforeDiscount),
     paid: parseInt(totalSellPrice),
     dueAmmount: parseInt(due),
@@ -206,10 +213,8 @@ router.post("/", async (req, res) => {
 // 5. push every purches product in sell collection with date || done
 //ok
 router.get("/", async (req, res) => {
-    const sellProduct = await sellCollection.find();
-    res.send(sellProduct);
-  });
-
-
+  const sellProduct = await sellCollection.find();
+  res.send(sellProduct);
+});
 
 module.exports = router;
