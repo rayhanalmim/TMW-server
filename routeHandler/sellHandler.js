@@ -225,10 +225,7 @@ router.post("/", async (req, res) => {
 // 2. return error if product out of stock || done
 // 2. calculate total price and minus if discount and due ammount exist || done
 // 2. add price in total sell, monthly sell and yearly sell in company info || done
-// 3. add purches product in agent product collection || done
-// 4. add due ammount in agent collection if exists || done
-// 5. push every purches product in sell collection with date || done
-//ok
+
 router.get("/", async (req, res) => {
 
     const sellProduct = await sellCollection.find();
