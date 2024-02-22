@@ -27,6 +27,7 @@ router.get("/agent/:email", async (req, res) => {
   res.send({ agent });
 });
 //ok
+
 router.get("/:id", async (req, res) => {
   try {
     const result = await userCollection.findOne({
@@ -92,8 +93,6 @@ router.patch("/:id", async (req, res) => {
   res.send(result);
 });
 
-
-
 // Route to get the total number of agents
 router.get("/totalAgents", async (req, res) => {
   try {
@@ -127,6 +126,7 @@ router.get("/totalUsers", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 router.put("/:id", async (req, res) => {
   try {
     const userId = req.params.id;
@@ -167,6 +167,5 @@ router.post('/sendSms', async (req, res) => {
   );
   res.send(update)
 })
-
 
 module.exports = router;

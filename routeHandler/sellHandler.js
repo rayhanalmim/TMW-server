@@ -220,7 +220,6 @@ router.post("/", async (req, res) => {
     res.send(sellObj);
 });
 
-
 router.get("/", async (req, res) => {
 
     const sellProduct = await sellCollection.find();
@@ -233,7 +232,5 @@ router.get('/memo', async(req, res)=>{
     const sellProduct = await sellCollection.findById(memoId);
     res.send(sellProduct);
 })
-
-
 
 module.exports = router;
