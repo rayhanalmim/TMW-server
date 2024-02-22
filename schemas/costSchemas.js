@@ -22,7 +22,6 @@ const costSchema = new mongoose.Schema({
     required: true,
   },
 });
-
 const Cost = mongoose.model("Cost", costSchema);
 
 // Add any additional settings or methods if needed

@@ -209,7 +209,6 @@ router.post("/", async (req, res) => {
 
     //-----------------------sendSms
     
-    
     if(due > 0){
         const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}. You've paid ${parseInt(totalSellPrice)}, Due amount: ${parseInt(due)}.`);
         console.log(response.data);
@@ -221,15 +220,6 @@ router.post("/", async (req, res) => {
     res.send(sellObj);
 });
 
-// ---------Todo
-// 1. productStock out || done
-// 2. return error if product out of stock || done
-// 2. calculate total price and minus if discount and due ammount exist || done
-// 2. add price in total sell, monthly sell and yearly sell in company info || done
-// 3. add purches product in agent product collection || done
-// 4. add due ammount in agent collection if exists || done
-// 5. push every purches product in sell collection with date || done
-//ok
 router.get("/", async (req, res) => {
 
     const sellProduct = await sellCollection.find();
@@ -242,7 +232,5 @@ router.get('/memo', async(req, res)=>{
     const sellProduct = await sellCollection.findById(memoId);
     res.send(sellProduct);
 })
-
-
 
 module.exports = router;
