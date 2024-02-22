@@ -220,11 +220,6 @@ router.post("/", async (req, res) => {
     res.send(sellObj);
 });
 
-// ---------Todo
-// 1. productStock out || done
-// 2. return error if product out of stock || done
-// 2. calculate total price and minus if discount and due ammount exist || done
-// 2. add price in total sell, monthly sell and yearly sell in company info || done
 
 router.get("/", async (req, res) => {
 
