@@ -266,4 +266,9 @@ router.get('/memo', async(req, res)=>{
     res.send(sellProduct);
 })
 
+router.get('/allSell', async(req, res)=>{
+    const sellData = await companyInfo.find();
+    res.send(sellData);
+})
+
 module.exports = router;
