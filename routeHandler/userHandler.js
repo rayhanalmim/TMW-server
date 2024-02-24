@@ -158,7 +158,7 @@ router.post('/sendSms', async (req, res) => {
 
   const agent = await userCollection.findOne({ _id: new ObjectId(userId) });
   if (agent) {
-    const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Humayun Treders. Dear ${agent.displayName}, Just a quick reminder that your payment of ${parseInt(agent.totalDueAmmout)} is due. Please pay the amount.`);
+    const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}, M/s Humayun Traders এর সাথে থাকার জন্য ধন্যবাদ,আপনার বকেয়া: ${parseInt(agent.totalDueAmmout)}TK বকেয়া টাকা দ্রুত পরিশোধ করুন`);
     console.log(response.data);
   }
   const update = await userCollection.updateOne(
