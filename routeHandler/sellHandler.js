@@ -221,7 +221,6 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-
     const sellProduct = await sellCollection.find();
     sellProduct.reverse();
     res.send(sellProduct);
