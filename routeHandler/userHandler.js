@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const userCollection = require("../schemas/userSchemas");
-
+const { ObjectId } = require("mongodb");
+const { default: axios } = require("axios");
+require("dotenv").config();
 
 //ok
 router.get("/admin/:email", async (req, res) => {
@@ -25,6 +27,7 @@ router.get("/agent/:email", async (req, res) => {
   res.send({ agent });
 });
 //ok
+
 router.get("/:id", async (req, res) => {
   try {
     const result = await userCollection.findOne({
@@ -45,7 +48,7 @@ router.get("/:id", async (req, res) => {
 // Route to get user by email
 router.get("/email/:email", async (req, res) => {
   const userEmail = req.params.email;
- 
+
   try {
     const user = await userCollection.findOne({ email: userEmail });
     if (user) {
@@ -82,15 +85,13 @@ router.delete("/:id", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   const id = req.params.id;
   const userType = req.body.role;
- 
+
   const filter = { _id: id };
   const update = { $set: { userType } };
   const result = await userCollection.updateOne(filter, update);
 
   res.send(result);
 });
-
-
 
 // Route to get the total number of agents
 router.get("/totalAgents", async (req, res) => {
@@ -125,6 +126,7 @@ router.get("/totalUsers", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 router.put("/:id", async (req, res) => {
   try {
     const userId = req.params.id;
@@ -150,5 +152,20 @@ router.put("/:id", async (req, res) => {
   }
 });
 
+router.post('/sendSms', async (req, res) => {
+  const { userId } = req.query;
+  const date = new Date().toISOString().substring(0, 10);
+
+  const agent = await userCollection.findOne({ _id: new ObjectId(userId) });
+  if (agent) {
+    const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Humayun Treders. Dear ${agent.displayName}, Just a quick reminder that your payment of ${parseInt(agent.totalDueAmmout)} is due. Please pay the amount.`);
+    console.log(response.data);
+  }
+  const update = await userCollection.updateOne(
+    { _id: new ObjectId(userId) },
+    { $set: { lastSmsSendingDate: date } }
+  );
+  res.send(update)
+})
 
 module.exports = router;
