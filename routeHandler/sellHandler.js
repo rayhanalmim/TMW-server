@@ -243,13 +243,13 @@ router.post("/", async (req, res) => {
 
     //-----------------------sendSms
     
-    // if(due > 0){
-    //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}. You've paid ${parseInt(totalSellPrice)}, Due amount: ${parseInt(due)}.`);
-    //     console.log(response.data);
-    // }else{
-    //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}.`);
-    //     console.log(response.data);
-    // }
+    if(due > 0){
+        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}. You've paid ${parseInt(totalSellPrice)}, Due amount: ${parseInt(due)}.`);
+        console.log(response.data);
+    }else{
+        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}.`);
+        console.log(response.data);
+    }
 
     res.send(sellObj);
 });
