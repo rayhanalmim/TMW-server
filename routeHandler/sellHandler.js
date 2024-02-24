@@ -231,6 +231,8 @@ router.post("/", async (req, res) => {
     const sellObj = {
         sellerEmail: sellerEmail,
         agentEmail: agent.email,
+        phoneNo: agent.phoneNo,
+        address: agent.address,
         date: date,
         agetName: agent.displayName,
         agentId: agent._id,
