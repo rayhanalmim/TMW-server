@@ -20,7 +20,6 @@ router.post("/", async (req, res) => {
     const year = new Date().toISOString().substring(0, 4);
     let purchesProductCollection = [];
 
-    // console.log(sellerEmail , buyerId , discount, due, totalPrice, items)
 
     if (!buyerId) {
         return res.status(201).send({ message: "please select a valid agent" });
