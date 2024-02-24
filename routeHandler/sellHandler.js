@@ -85,6 +85,11 @@ router.post("/", async (req, res) => {
     }
 
     // -------------------addMonthlyYearlyAndTotal
+    const currentDayCollection = await companyInfo.findOne({
+        companyInfo: "adminCollection",
+        dailySellAmmount: { $elemMatch: { day: date } },
+    });
+
     const currentMonthCollection = await companyInfo.findOne({
         companyInfo: "adminCollection",
         monthlySellAmount: { $elemMatch: { month: month } },
@@ -105,6 +110,36 @@ router.post("/", async (req, res) => {
         }
     );
 
+     // ----------------------updateDailySell
+     if (currentDayCollection) {
+        const updateQuery = {
+            companyInfo: "adminCollection",
+            dailySellAmmount: {
+                $elemMatch: {
+                    day: date,
+                },
+            },
+        };
+        const updateResult = await companyInfo.updateOne(updateQuery, {
+            $set: {
+                "dailySellAmmount.$.totalAmmount":
+                    parseInt(currentDayCollection.dailySellAmmount[0].totalAmmount) +
+                    parseInt(totalPrice),
+            },
+        });
+    } else {
+        const createObj = {
+            day: date,
+            totalAmmount: parseInt(totalPrice),
+        };
+        const update = await companyInfo.updateOne(
+            { companyInfo: "adminCollection" },
+            {
+                $push: { dailySellAmmount: createObj },
+            }
+        );
+    }
+
     // ----------------------updateMonthlyPrice
     if (currentMonthCollection) {
         const updateQuery = {
@@ -115,7 +150,6 @@ router.post("/", async (req, res) => {
                 },
             },
         };
-        totalSellPrice
         const updateResult = await companyInfo.updateOne(updateQuery, {
             $set: {
                 "monthlySellAmount.$.totalAmmount":
@@ -209,13 +243,13 @@ router.post("/", async (req, res) => {
 
     //-----------------------sendSms
     
-    if(due > 0){
-        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}. You've paid ${parseInt(totalSellPrice)}, Due amount: ${parseInt(due)}.`);
-        console.log(response.data);
-    }else{
-        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}.`);
-        console.log(response.data);
-    }
+    // if(due > 0){
+    //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}. You've paid ${parseInt(totalSellPrice)}, Due amount: ${parseInt(due)}.`);
+    //     console.log(response.data);
+    // }else{
+    //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=Hello ${agent.displayName}, Thank you for buying from Humanitarian Traders. Your total purchase is ${parseInt(beforeDiscount)}.`);
+    //     console.log(response.data);
+    // }
 
     res.send(sellObj);
 });
