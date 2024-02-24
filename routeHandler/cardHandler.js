@@ -53,6 +53,7 @@ router.delete('/delete', async(req, res)=>{
         { user: user }, // Assuming this is how you identify the user
         { $pull: { cardItems: { _id: id } } }
       )
+      console.log(remove);
     res.send(remove);
 })
 router.delete('/deleteAllCard', async(req, res)=>{

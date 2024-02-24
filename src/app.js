@@ -37,7 +37,6 @@ app.use("/user", userHandler);
 app.use("/cost", costHandler);
 app.use("/card", cardHandler);
 app.use("/sell", sellHandler);
-
 // --------------------------------------localApi-------------------------------------------
 
 app.get("/", (req, res) => {
