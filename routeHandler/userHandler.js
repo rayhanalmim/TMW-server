@@ -168,4 +168,18 @@ router.post('/sendSms', async (req, res) => {
   res.send(update)
 })
 
+router.post('/paid', async(req, res)=>{
+  const id = req.query.userId;
+  const amount = req.query.amount;
+  console.log(id, amount)
+  const user = await userCollection.findOne({ _id: new ObjectId(id) });
+
+  const update = await userCollection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { totalDueAmmout: user.totalDueAmmout - amount } }
+  );
+  console.log(update);
+  res.send(update);
+})
+
 module.exports = router;
