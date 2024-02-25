@@ -230,6 +230,7 @@ router.post("/", async (req, res) => {
     const sellObj = {
         sellerEmail: sellerEmail,
         agentEmail: agent.email,
+        discount: discount,
         phoneNo: agent.phoneNo,
         address: agent.address,
         date: date,
