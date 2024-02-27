@@ -20,6 +20,8 @@ router.post("/", async (req, res) => {
     const year = new Date().toISOString().substring(0, 4);
     let purchesProductCollection = [];
 
+    console.log(sellerEmail, buyerId, discount, due, totalPrice ,items );
+
 
     if (!buyerId) {
         return res.status(201).send({ message: "please select a valid agent" });
@@ -88,6 +90,7 @@ router.post("/", async (req, res) => {
         companyInfo: "adminCollection",
         dailySellAmmount: { $elemMatch: { day: date } },
     });
+    const filterForAddTotal = await companyInfo.findOne({companyInfo: "adminCollection"});
 
     const currentMonthCollection = await companyInfo.findOne({
         companyInfo: "adminCollection",
@@ -104,7 +107,7 @@ router.post("/", async (req, res) => {
         {
             $set: {
                 totalSellAmmount:
-                    currentMonthCollection.totalSellAmmount + parseInt(totalPrice),
+                filterForAddTotal.totalSellAmmount + parseInt(totalPrice),
             },
         }
     );
