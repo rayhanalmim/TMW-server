@@ -89,7 +89,7 @@ router.patch("/:id", async (req, res) => {
   res.send(result);
 });
 
-// Route to get the total number of agents
+
 router.get("/totalAgents", async (req, res) => {
   try {
     const totalAgents = await userCollection.countDocuments({ userType: "isAgent" });
