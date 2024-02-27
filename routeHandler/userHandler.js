@@ -25,7 +25,6 @@ router.get("/agent/:email", async (req, res) => {
   }
   res.send({ agent });
 });
-//ok
 
 router.get("/:id", async (req, res) => {
   try {
@@ -44,7 +43,6 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Route to get user by email
 router.get("/email/:email", async (req, res) => {
   const userEmail = req.params.email;
 
@@ -61,12 +59,11 @@ router.get("/email/:email", async (req, res) => {
   }
 });
 
-//ok
 router.get("/", async (req, res) => {
   const users = await userCollection.find();
   res.send(users);
 });
-//ok
+
 router.post("/", async (req, res) => {
   const user = req.body;
   const create = await userCollection.create(user);
