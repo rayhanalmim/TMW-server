@@ -6,7 +6,6 @@ const { ObjectId } = require("mongodb");
 const { default: axios } = require("axios");
 require("dotenv").config();
 
-//ok
 router.get("/admin/:email", async (req, res) => {
   const email = req.params.email;
   const user = await userCollection.findOne({ email: email });
@@ -16,7 +15,7 @@ router.get("/admin/:email", async (req, res) => {
   }
   res.send({ admin });
 });
-//ok
+
 router.get("/agent/:email", async (req, res) => {
   const email = req.params.email;
   const user = await userCollection.findOne({ email: email });
