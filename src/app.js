@@ -18,9 +18,6 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@tmwcorporation.i6hvwsv.mongodb.net/?retryWrites=true&w=majority`;
 
 
-
-
-
 -mongoose.connect(uri, { dbName: process.env.DB_NAME });
 
 const db = mongoose.connection;
