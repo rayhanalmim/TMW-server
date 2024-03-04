@@ -21,7 +21,7 @@ router.get("/agent/:email", async (req, res) => {
   const user = await userCollection.findOne({ email: email });
   let agent = false;
   if (user) {
-    agent = user?.userType === "isAgent";
+    agent = user?.userType === "deskAdmin";
   }
   res.send({ agent });
 });
