@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
     const year = new Date().toISOString().substring(0, 4);
     let purchesProductCollection = [];
 
-    console.log(sellerEmail, buyerId, discount, due, totalPrice ,items );
+    console.log(sellerEmail, buyerId, discount, due, totalPrice, items);
 
 
     if (!buyerId) {
@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
         companyInfo: "adminCollection",
         dailySellAmmount: { $elemMatch: { day: date } },
     });
-    const filterForAddTotal = await companyInfo.findOne({companyInfo: "adminCollection"});
+    const filterForAddTotal = await companyInfo.findOne({ companyInfo: "adminCollection" });
 
     const currentMonthCollection = await companyInfo.findOne({
         companyInfo: "adminCollection",
@@ -107,13 +107,13 @@ router.post("/", async (req, res) => {
         {
             $set: {
                 totalSellAmmount:
-                filterForAddTotal.totalSellAmmount + parseInt(totalPrice),
+                    filterForAddTotal.totalSellAmmount + parseInt(totalPrice),
             },
         }
     );
 
-     // ----------------------updateDailySell
-     if (currentDayCollection) {
+    // ----------------------updateDailySell
+    if (currentDayCollection) {
         const updateQuery = {
             companyInfo: "adminCollection",
             dailySellAmmount: {
@@ -247,15 +247,15 @@ router.post("/", async (req, res) => {
     const createSellCollection = await sellCollection.create(sellObj);
 
     //-----------------------sendSms
-    
-    if(due > 0) {
+
+    if (due > 0) {
         const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}  আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় : ${parseInt(beforeDiscount)}TK, পরিশোধ: ${parseInt(totalSellPrice)}TK, বকেয়া : ${parseInt(due)}TK ।`);
         console.log(response.data);
     } else {
         const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}। আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় হলো ${parseInt(beforeDiscount)}tk।`);
         console.log(response.data);
     }
-    
+
 
     res.send(sellObj);
 });
@@ -266,15 +266,29 @@ router.get("/", async (req, res) => {
     res.send(sellProduct);
 });
 
-router.get('/memo', async(req, res)=>{
-    const {memoId} = req.query;
+router.get('/memo', async (req, res) => {
+    const { memoId } = req.query;
     const sellProduct = await sellCollection.findById(memoId);
     res.send(sellProduct);
 })
 
-router.get('/allSell', async(req, res)=>{
+router.get('/allSell', async (req, res) => {
     const sellData = await companyInfo.find();
     res.send(sellData[0]);
+})
+
+
+router.get('/login', async (req, res) => {
+    const userEmail = req.query.userEmail;
+    const userPassword = req.query.userPassword;
+    console.log(userEmail, userPassword);
+    const user = await userCollection.findOne({ email: userEmail, password: userPassword , userType: "DRS"});
+    console.log(user);
+    if (user) {
+        return res.status(400).send(user);
+    } else {
+        return res.status(404).send({ messege: "invite Credential" })
+    }
 })
 
 module.exports = router;

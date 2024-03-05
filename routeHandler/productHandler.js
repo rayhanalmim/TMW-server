@@ -12,6 +12,11 @@ router.get("/", async (req, res) => {
   res.status(200).json(products);
 });
 
+router.get("/available", async (req, res) => {
+  const products = await Product.find({ productQuantity: { $gt: 0 } });
+  res.status(200).json(products);
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const result = await Product.findOne({ _id: new ObjectId(req.params.id) });
