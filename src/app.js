@@ -29,11 +29,8 @@ db.on("error", (err) => {
 db.once("open", () => {
   console.log("Connected to MongoDB");
 });
-//start product function
 
 app.use("/product", productHandler);
-
-//start user function
 
 app.use("/user", userHandler);
 app.use("/cost", costHandler);
