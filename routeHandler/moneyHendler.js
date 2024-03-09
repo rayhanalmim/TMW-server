@@ -15,6 +15,17 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/singleShop", async (req, res) => {
+  try {
+    const id = req.query.id;
+    const costs = await Money.findOne({_id: id});
+    res.send(costs);
+  } catch (error) {
+    console.error("Error fetching costs:", error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     const costData = req.body;
