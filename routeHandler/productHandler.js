@@ -5,7 +5,6 @@ const { ObjectId } = require("mongodb");
 const productSchema = require("../schemas/productSchemas");
 const Product = require("../schemas/productSchemas");
 
-
 // Handle GET request for all products
 router.get("/", async (req, res) => {
   const products = await Product.find();
@@ -15,6 +14,26 @@ router.get("/", async (req, res) => {
 router.get("/available", async (req, res) => {
   const products = await Product.find({ productQuantity: { $gt: 0 } });
   res.status(200).json(products);
+});
+
+router.get("/inventory", async (req, res) => {
+  let inStock = 0;
+  let totalAmmout = 0;
+  const products = await Product.find();
+
+  for (const product of products) {
+    const { _id, productPrice, productQuantity } = product;
+
+    if(productQuantity != 0){
+      inStock = inStock + productQuantity;
+      totalAmmout = productQuantity * productPrice;
+    } 
+  }
+  const data = {
+    totalItemInStock : inStock,
+    totalAmountOProduct: totalAmmout,
+  }
+   res.status(200).json(data);
 });
 
 router.get("/:id", async (req, res) => {
@@ -102,4 +121,6 @@ router.get("/searchbyName/:name", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 module.exports = router;
