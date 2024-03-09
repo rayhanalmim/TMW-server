@@ -26,7 +26,7 @@ router.get("/inventory", async (req, res) => {
 
     if(productQuantity != 0){
       inStock = inStock + productQuantity;
-      totalAmmout = productQuantity * productPrice;
+      totalAmmout = totalAmmout + (productQuantity * productPrice);
     } 
   }
   const data = {
