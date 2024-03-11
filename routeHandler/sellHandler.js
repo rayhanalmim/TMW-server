@@ -285,7 +285,7 @@ router.get('/login', async (req, res) => {
     const user = await userCollection.findOne({ email: userEmail, password: userPassword , userType: "DRS"});
     console.log(user);
     if (user) {
-        return res.status(400).send(user);
+        return res.status(200).send(user);
     } else {
         return res.status(404).send({ messege: "invite Credential" })
     }
