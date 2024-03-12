@@ -15,14 +15,15 @@ router.post("/", async (req, res) => {
     }
 
     const item = {
-        productId : productId,
+        ID : productId,
+        product: product,
         productQuentity: productQuentity
     };
  
     const isitemExist = await cardCollection.findOne({
         $and: [
             { user: userEmail },
-            { cardItems: { $elemMatch: { productId: productId } } }
+            { cardItems: { $elemMatch: { ID: productId } } }
         ]
     });
 
