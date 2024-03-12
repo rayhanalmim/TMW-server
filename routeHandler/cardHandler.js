@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
     const productQuentity = parseInt(req.query.quantity);
 
     const product = await Product.findOne({ _id: new ObjectId(productId) });
-    if(product.productQuantity < productQuentity){
+    if(product.productQuantity <= productQuentity){
         return res.status(200).send({ message: `${product.productName} Out of stock` });
     }
 
@@ -48,13 +48,27 @@ router.post("/", async (req, res) => {
     } 
 });
 
+
 router.get("/", async (req, res) => {
     const { email } = req.query;
     const isCardExist = await cardCollection.findOne({ user: email });
     if(isCardExist){
         return res.send(isCardExist)
     }else{
-        return res.status(201).send({message: 'no item found'})
+        return res.status(200).send({message: 'no item found'})
+    }
+});
+
+
+router.get("/cardItemQuantity", async (req, res) => {
+    const { email } = req.query;
+    const card = await cardCollection.findOne({ user: email }); 
+
+    if(card){
+        const total = card.cardItems.length;
+        return res.send({total: total});
+    }else{
+        return res.status(200).send({total: 0});
     }
 });
 

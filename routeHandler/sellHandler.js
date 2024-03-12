@@ -282,7 +282,7 @@ router.get('/login', async (req, res) => {
     const userEmail = req.query.userEmail;
     const userPassword = req.query.userPassword;
     console.log(userEmail, userPassword);
-    const user = await userCollection.findOne({ email: userEmail, password: userPassword , userType: "DRS"});
+    const user = await userCollection.findOne({ email: userEmail, password: userPassword});
     console.log(user);
     if (user) {
         return res.status(200).send(user);
