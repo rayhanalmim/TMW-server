@@ -73,12 +73,12 @@ router.get("/cardItemQuantity", async (req, res) => {
     }
 });
 
-router.delete('/delete', async(req, res)=>{
-    const {id, user} = req.query;
-    console.log(id, user);
+router.post('/delete', async(req, res)=>{
+    const {productId, userEmail} = req.query;
+    console.log(productId, userEmail);
     const remove = await cardCollection.updateOne(
-        { user: user }, // Assuming this is how you identify the user
-        { $pull: { cardItems: { _id: id } } }
+        { user: userEmail }, // Assuming this is how you identify the user
+        { $pull: { cardItems: { ID: productId } } }
       )
       console.log(remove);
     res.send(remove);
