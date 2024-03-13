@@ -3,6 +3,8 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const dsrRequest = require("../schemas/dsrSchema");
 const Product = require("../schemas/productSchemas");
+const userCollection = require("../schemas/userSchemas");
+const moneyInfo = require("../schemas/moneySchemas");
 
 router.get("/", async (req, res) => {
     const push = await dsrRequest.create({ test: "hello" });
@@ -53,6 +55,23 @@ router.get("/searchProduct", async (req, res) => {
     const filteredResults = products.filter((product) => regex.test(product.productName));
 
     filteredResults.sort((a, b) => a.productName.localeCompare(b.productName));
+
+    res.send(filteredResults)
+});
+
+router.get("/shop", async (req, res) => {
+    // const searchQuery = req.query.searchText;
+    const { dsrEmail } = req.query;
+
+    const dsr = await userCollection.findOne({ email: dsrEmail});
+
+    const regex = new RegExp(dsr.ifDsrArea, 'i');
+
+    const shops = await moneyInfo.find();
+
+    const filteredResults = shops.filter((product) => regex.test(product.shopArea));
+
+    filteredResults.sort((a, b) => a.shopArea.localeCompare(b.shopArea));
 
     res.send(filteredResults)
 });
