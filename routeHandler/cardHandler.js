@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
     const productQuentity = parseInt(req.query.quantity);
 
     const product = await Product.findOne({ _id: new ObjectId(productId) });
-    if(product.productQuantity <= productQuentity){
+    if(product.productQuantity < productQuentity){
         return res.status(200).send({ message: `${product.productName} Out of stock` });
     }
 

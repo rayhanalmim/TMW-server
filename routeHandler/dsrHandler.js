@@ -18,7 +18,7 @@ router.get("/searchProduct", async (req, res) => {
     const searchQuery = req.query.searchText;
     const regex = new RegExp(searchQuery, 'i'); 
 
-    const products = await Product.find();
+    const products = await Product.find({ productQuantity: { $gt: 0 } });
 
     const filteredResults = products.filter((product) => regex.test(product.productName));
 
