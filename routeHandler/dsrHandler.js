@@ -9,14 +9,44 @@ router.get("/", async (req, res) => {
     res.send("hello")
 });
 
+router.post("/", async (req, res) => {
+    const { userEmail, shopId } = req.query;
+    const utcPlus6Date = new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
+    const currentTimeDhaka = new Date(utcPlus6Date).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Dhaka' });
+    const date = new Date().toISOString().substring(0, 10);
+
+    const shop = await Money.findOne({_id: shopId});
+    const dsr = await userCollection.findOne({ email: userEmail});
+    const requestedData = await cardCollection.findOne({ user: userEmail });
+    const obj = {
+        dsrInfo: dsr,
+        orderDate: date, 
+        orderTime: currentTimeDhaka,
+        orderStatus: "pending",
+        shopInfo: shop,
+        requestedItems: requestedData.cardItems,
+    }
+
+    const clearCardData = await cardCollection.deleteOne({ user: userEmail });
+    const push = await dsrRequest.create(obj);
+
+    res.status(200).send({message: "Request send successfully"});
+});
+
 router.get("/order", async (req, res) => {
-    const data = await dsrRequest.find();
+    const utcPlus6Date = new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
+    const currentTimeDhaka = new Date(utcPlus6Date).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Dhaka' });
+    const date = new Date().toISOString().substring(0, 10);
+    const data = {
+        date: date,
+        time: currentTimeDhaka
+    }
     res.send(data)
 });
 
 router.get("/searchProduct", async (req, res) => {
     const searchQuery = req.query.searchText;
-    const regex = new RegExp(searchQuery, 'i'); 
+    const regex = new RegExp(searchQuery, 'i');
 
     const products = await Product.find({ productQuantity: { $gt: 0 } });
 
