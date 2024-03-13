@@ -5,6 +5,7 @@ const dsrRequest = require("../schemas/dsrSchema");
 const Product = require("../schemas/productSchemas");
 const userCollection = require("../schemas/userSchemas");
 const moneyInfo = require("../schemas/moneySchemas");
+const cardCollection = require("../schemas/cardSchema");
 
 router.get("/", async (req, res) => {
     const push = await dsrRequest.create({ test: "hello" });
@@ -12,14 +13,14 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    const { userEmail, shopId } = req.query;
+    const { dsrEmail, shopId } = req.query;
     const utcPlus6Date = new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
     const currentTimeDhaka = new Date(utcPlus6Date).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Dhaka' });
     const date = new Date().toISOString().substring(0, 10);
 
-    const shop = await Money.findOne({_id: shopId});
-    const dsr = await userCollection.findOne({ email: userEmail});
-    const requestedData = await cardCollection.findOne({ user: userEmail });
+    const shop = await moneyInfo.findOne({_id: shopId});
+    const dsr = await userCollection.findOne({ email: dsrEmail});
+    const requestedData = await cardCollection.findOne({ user: dsrEmail });
     const obj = {
         dsrInfo: dsr,
         orderDate: date, 
@@ -29,7 +30,7 @@ router.post("/", async (req, res) => {
         requestedItems: requestedData.cardItems,
     }
 
-    const clearCardData = await cardCollection.deleteOne({ user: userEmail });
+    const clearCardData = await cardCollection.deleteOne({ user: dsrEmail });
     const push = await dsrRequest.create(obj);
 
     res.status(200).send({message: "Request send successfully"});
