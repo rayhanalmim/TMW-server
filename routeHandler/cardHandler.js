@@ -4,6 +4,7 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const cardCollection = require("../schemas/cardSchema");
 const Product = require("../schemas/productSchemas");
+const dsrRequest = require("../schemas/dsrSchema");
 
 router.post("/", async (req, res) => {
     const { userEmail, productId } = req.query;
@@ -79,6 +80,16 @@ router.post('/delete', async(req, res)=>{
     const remove = await cardCollection.updateOne(
         { user: userEmail }, // Assuming this is how you identify the user
         { $pull: { cardItems: { ID: productId } } }
+      )
+      console.log(remove);
+    res.send(remove);
+})
+
+router.post('/admindelete', async(req, res)=>{
+    const {productId, cardId} = req.query;
+    const remove = await dsrRequest.updateOne(
+        { _id: cardId }, // Assuming this is how you identify the user
+        { $pull: { requestedItems: { ID: productId } } }
       )
       console.log(remove);
     res.send(remove);
