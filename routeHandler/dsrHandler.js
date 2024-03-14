@@ -6,9 +6,10 @@ const Product = require("../schemas/productSchemas");
 const userCollection = require("../schemas/userSchemas");
 const moneyInfo = require("../schemas/moneySchemas");
 const cardCollection = require("../schemas/cardSchema");
+const { ObjectId } = require("mongodb");
 
 router.get("/", async (req, res) => {
-    const requestedData = await dsrRequest.find();
+    const requestedData = await dsrRequest.find({orderStatus: "pending"});
     res.send(requestedData)
 });
 
@@ -18,10 +19,19 @@ router.get("/findOne", async (req, res) => {
     res.send(requestedData)
 });
 
-router.delete("/deleteOne", async (req, res) => {
+router.post("/reject", async (req, res) => {
     const reqId = req.query.reqId;
-    const requestedData = await dsrRequest.findByIdAndDelete(reqId);
-    res.send(requestedData)
+
+    const update = await dsrRequest.updateOne(
+        { _id: new ObjectId(reqId) },
+        {
+            $set: {
+                orderStatus: "reject",
+                requestedItems: []
+            },
+        }
+    );
+    res.send(update)
 });
 
 router.post("/", async (req, res) => {
