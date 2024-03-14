@@ -11,9 +11,16 @@ router.get("/", async (req, res) => {
     const requestedData = await dsrRequest.find();
     res.send(requestedData)
 });
+
 router.get("/findOne", async (req, res) => {
     const reqId = req.query.reqId;
     const requestedData = await dsrRequest.findById(reqId);
+    res.send(requestedData)
+});
+
+router.delete("/deleteOne", async (req, res) => {
+    const reqId = req.query.reqId;
+    const requestedData = await dsrRequest.findByIdAndDelete(reqId);
     res.send(requestedData)
 });
 
