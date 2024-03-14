@@ -11,6 +11,11 @@ router.get("/", async (req, res) => {
     const requestedData = await dsrRequest.find();
     res.send(requestedData)
 });
+router.get("/findOne", async (req, res) => {
+    const reqId = req.query.reqId;
+    const requestedData = await dsrRequest.findById(reqId);
+    res.send(requestedData)
+});
 
 router.post("/", async (req, res) => {
     const { dsrEmail, shopId } = req.query;
