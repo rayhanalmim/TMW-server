@@ -8,8 +8,8 @@ const moneyInfo = require("../schemas/moneySchemas");
 const cardCollection = require("../schemas/cardSchema");
 
 router.get("/", async (req, res) => {
-    const push = await dsrRequest.create({ test: "hello" });
-    res.send("hello")
+    const requestedData = await dsrRequest.find();
+    res.send(requestedData)
 });
 
 router.post("/", async (req, res) => {
