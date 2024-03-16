@@ -40,7 +40,25 @@ router.post("/reject", async (req, res) => {
 });
 
 router.post("/acceptDue", async (req, res) => {
+    const products = req.body;
     const reqId = req.query.reqId;
+
+    for (const product of products) {
+        const { ID, quantity } = product;
+
+        const update = await dsrRequest.updateOne(
+            { 
+                _id: new ObjectId(reqId), 
+                "requestedItems.ID": ID // Match the product ID within the requestedItems array
+            },
+            {
+                $set: {
+                    "requestedItems.$.productQuentity": quantity,
+                },
+            }
+        )
+        console.log(update);;  
+    }
 
     const update = await dsrRequest.updateOne(
         { _id: new ObjectId(reqId) },
@@ -50,7 +68,9 @@ router.post("/acceptDue", async (req, res) => {
             },
         }
     );
-    res.send(update)
+
+
+    res.send("update")
 });
 
 router.post("/", async (req, res) => {
