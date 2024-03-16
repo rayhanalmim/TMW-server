@@ -9,7 +9,12 @@ const cardCollection = require("../schemas/cardSchema");
 const { ObjectId } = require("mongodb");
 
 router.get("/", async (req, res) => {
-    const requestedData = await dsrRequest.find({orderStatus: "pending"});
+    const requestedData = await dsrRequest.find({
+        $or: [
+          { orderStatus: "pending" },
+          { orderStatus: "acceptdue" }
+        ]
+      });
     res.send(requestedData)
 });
 
