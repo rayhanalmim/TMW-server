@@ -34,6 +34,20 @@ router.post("/reject", async (req, res) => {
     res.send(update)
 });
 
+router.post("/acceptDue", async (req, res) => {
+    const reqId = req.query.reqId;
+
+    const update = await dsrRequest.updateOne(
+        { _id: new ObjectId(reqId) },
+        {
+            $set: {
+                orderStatus: "acceptdue",
+            },
+        }
+    );
+    res.send(update)
+});
+
 router.post("/", async (req, res) => {
     const { dsrEmail, shopId } = req.query;
     const utcPlus6Date = new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });

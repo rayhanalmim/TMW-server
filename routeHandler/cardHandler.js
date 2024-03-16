@@ -54,12 +54,25 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
     const { email } = req.query;
     const isCardExist = await cardCollection.findOne({ user: email });
-    if(isCardExist){
-        return res.send(isCardExist)
-    }else{
-        return res.status(200).send({message: 'no item found'})
+
+    if (isCardExist) {
+        const cardData = isCardExist.toObject(); // Convert Mongoose document to plain JavaScript object
+        const cardItemsObject = {};
+
+        // Convert cardItems array to object
+        cardData.cardItems.forEach(item => {
+            cardItemsObject[item.ID] = item;
+            delete cardItemsObject[item.ID].ID; // Remove redundant ID property
+        });
+
+        cardData.cardItems = cardItemsObject;
+
+        return res.send(cardData);
+    } else {
+        return res.status(200).send({ message: 'no item found' });
     }
 });
+
 
 
 router.get("/cardItemQuantity", async (req, res) => {
