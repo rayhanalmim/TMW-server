@@ -12,6 +12,7 @@ const cardHandler = require("../routeHandler/cardHandler.js");
 const sellHandler = require("../routeHandler/sellHandler.js");
 const moneyHandler = require("../routeHandler/moneyHendler.js");
 const dsrRequ = require('../routeHandler/dsrHandler.js')
+const billHandler = require('../routeHandler/billHandler.js')
 
 app.use(cors());
 app.use(express.json());
@@ -39,6 +40,7 @@ app.use("/card", cardHandler);
 app.use("/sell", sellHandler);
 app.use("/money", moneyHandler); ///////shop
 app.use("/dsrRequ", dsrRequ); 
+app.use("/bill", billHandler); 
 // --------------------------------------localApi-------------------------------------------
 
 app.get("/", (req, res) => {
