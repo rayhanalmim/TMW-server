@@ -11,6 +11,7 @@ require("dotenv").config();
 const { default: axios } = require("axios");
 const moneyInfo = require("../schemas/moneySchemas");
 const dsrRequest = require("../schemas/dsrSchema");
+const billCollection = require("../schemas/billSchema");
 
 router.post("/", async (req, res) => {
     const { discount, due, totalPrice } = req.query;
@@ -251,17 +252,24 @@ router.post("/", async (req, res) => {
             },
         }
     );
+
+
+    const finalData = {
+        ...items, discount, due, totalPrice,
+    }
+
+    const storeBill = await billCollection.create(finalData);
     
 
-    // const finalUpdate = await dsrRequest.updateOne(
-    //     { _id: new ObjectId(items._id) },
-    //     {
-    //         $set: {
-    //             orderStatus: "Completed",
-    //             requestedItems: []
-    //         },
-    //     }
-    // );
+    const finalUpdate = await dsrRequest.updateOne(
+        { _id: new ObjectId(items._id) },
+        {
+            $set: {
+                orderStatus: "Completed",
+                requestedItems: []
+            },
+        }
+    );
 
     // if (due > 0) {
     //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}  আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় : ${parseInt(beforeDiscount)}TK, পরিশোধ: ${parseInt(totalSellPrice)}TK, বকেয়া : ${parseInt(due)}TK ।`);
