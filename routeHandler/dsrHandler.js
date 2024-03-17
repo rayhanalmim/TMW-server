@@ -18,10 +18,37 @@ router.get("/", async (req, res) => {
     res.send(requestedData)
 });
 
+router.get("/OrderNo", async (req, res) => {
+    const requestedData = await dsrRequest.find(
+          { orderStatus: "Completed" }
+      );
+    res.send(requestedData)
+});
+
 router.get("/findOne", async (req, res) => {
     const reqId = req.query.reqId;
     const requestedData = await dsrRequest.findById(reqId);
     res.send(requestedData)
+});
+
+router.get("/UpdateOne", async (req, res) => {
+    const {reqId, orderNo} = req.query;
+    const requestedData = await dsrRequest.findById(reqId);
+
+    if(!requestedData.orderNo){
+        const update = await dsrRequest.updateOne(
+            { _id: reqId },
+            {
+                $set: {
+                    orderNo: orderNo,
+                },
+            },
+            { upsert: true } // Create a new document if it doesn't exist
+        );
+         return res.send(update)
+    }
+
+    res.send("")
 });
 
 router.post("/reject", async (req, res) => {

@@ -125,8 +125,8 @@ router.post("/", async (req, res) => {
         { companyInfo: "adminCollection" },
         {
             $set: {
-                totalSellAmmount:
-                    filterForAddTotal.totalSellAmmount + parseInt(totalPrice),
+                totalSellAmount:
+                    filterForAddTotal.totalSellAmount + parseInt(totalPrice),
             },
         }
     );
