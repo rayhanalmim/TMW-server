@@ -9,9 +9,11 @@ const sellCollection = require("../schemas/sellCollection");
 const { route } = require("./cardHandler");
 require("dotenv").config();
 const { default: axios } = require("axios");
+const moneyInfo = require("../schemas/moneySchemas");
+const dsrRequest = require("../schemas/dsrSchema");
 
 router.post("/", async (req, res) => {
-    const { sellerEmail, buyerId, discount, due, totalPrice } = req.query;
+    const { discount, due, totalPrice } = req.query;
     let beforeDiscount = totalPrice;
     const items = req.body;
     let totalSellPrice = totalPrice;
@@ -20,12 +22,7 @@ router.post("/", async (req, res) => {
     const year = new Date().toISOString().substring(0, 4);
     let purchesProductCollection = [];
 
-    console.log(sellerEmail, buyerId, discount, due, totalPrice, items);
 
-
-    if (!buyerId) {
-        return res.status(201).send({ message: "please select a valid agent" });
-    }
 
     if (discount) {
         totalSellPrice = totalSellPrice - discount;
@@ -36,10 +33,11 @@ router.post("/", async (req, res) => {
     }
 
     // --------------------checkProductStock:
-    for (const item of items) {
-        const { _id, quantity, productName } = item;
+    for (const item of items.requestedItems) {
+        const { ID, quantity } = item;
+        const { productName } = item.product;
 
-        const storedProduct = await Product.findOne({ _id: new ObjectId(_id) });
+        const storedProduct = await Product.findOne({ _id: new ObjectId(ID) });
         if (!storedProduct || storedProduct.productQuantity < quantity) {
             return res
                 .status(202)
@@ -48,23 +46,34 @@ router.post("/", async (req, res) => {
     }
 
     // ---------------stockOutAndOtherFunctionality:
-    for (const item of items) {
+    for (const item of items.requestedItems) {
+        const {
+            quantity,
+        } = item;
+
         const {
             _id,
-            quantity,
             productName,
-            ownerEmail,
             productPrice,
             imageURL,
-            ProductType,
-        } = item;
+            productType,
+        } = item.product;
 
         const obj = {
             productName: productName,
             quantity: quantity,
-            productImage: imageURL,
+            imageURL: imageURL,
             unitPrice: productPrice,
+            productType: productType,
         };
+
+        const sellCollectionObj = {
+            date: date,
+            to: items.shopInfo,
+            via: items.dsrInfo,
+            quantity: quantity,
+            unitPrice: productPrice,
+        }
 
         purchesProductCollection.push(obj);
 
@@ -77,13 +86,22 @@ router.post("/", async (req, res) => {
         );
 
         // --------------pushPurchesProductInAgentCollection
-        const update = await userCollection.updateOne(
-            { _id: new ObjectId(buyerId) },
+        const update = await moneyInfo.updateOne(
+            { _id: new ObjectId(items.shopInfo._id) },
             {
-                $push: { purchesProductCollection: item },
+                $push: { purchesProductCollection: obj },
             }
         );
+        const updateProductCollection = await Product.updateOne(
+            { _id: _id },
+            { $push: { sellCollections: sellCollectionObj } },
+            { upsert: true } // Create a new document if it doesn't exist
+        );
+            console.log(updateProductCollection);
+
+        
     }
+
 
     // -------------------addMonthlyYearlyAndTotal
     const currentDayCollection = await companyInfo.findOne({
@@ -203,61 +221,58 @@ router.post("/", async (req, res) => {
     }
 
     // ----------------------addDueAmmout
-    const agent = await userCollection.findOne({ _id: new ObjectId(buyerId) });
+    const shop = await moneyInfo.findOne({ _id: new ObjectId(items.shopInfo._id) });
 
     if (due) {
-        const update = await userCollection.updateOne(
-            { _id: new ObjectId(buyerId) },
-            { $set: { totalDueAmmout: agent.totalDueAmmout + parseInt(due) } }
+        const update = await moneyInfo.updateOne(
+            { _id: new ObjectId(items.shopInfo._id) },
+            { $set: { totalDue: shop.totalDue + parseInt(due) } }
         );
     }
     if (totalSellPrice) {
-        const update = await userCollection.updateOne(
-            { _id: new ObjectId(buyerId) },
-            { $set: { totalSellPrice: totalSellPrice } }
+        const update = await moneyInfo.updateOne(
+            { _id: new ObjectId(items.shopInfo._id) },
+            { $set: { totalPay: shop.totalPay + parseInt(totalSellPrice) } }
+        );
+    } else {
+        const update = await moneyInfo.updateOne(
+            { _id: new ObjectId(items.shopInfo._id) },
+            { $set: { totalPay: shop.totalPay + parseInt(totalPrice) } }
         );
     }
 
     // -------------------addTotalPurchesInAgentCollection
-    const update = await userCollection.updateOne(
-        { _id: new ObjectId(buyerId) },
+    const update = await moneyInfo.updateOne(
+        { _id: new ObjectId(items.shopInfo._id) },
         {
             $set: {
-                totalPurchesAmmount:
-                    agent.totalPurchesAmmount + parseInt(beforeDiscount),
+                totalBuyAmout:
+                    shop.totalBuyAmout + parseInt(beforeDiscount),
             },
         }
     );
+    
 
-    // ------------------------createSellCollection
-    const sellObj = {
-        sellerEmail: sellerEmail,
-        agentEmail: agent.email,
-        discount: discount,
-        phoneNo: agent.phoneNo,
-        address: agent.address,
-        date: date,
-        agetName: agent.displayName,
-        agentId: agent._id,
-        totalCost: parseInt(beforeDiscount),
-        paid: parseInt(totalSellPrice),
-        dueAmmount: parseInt(due),
-        purchesProducts: purchesProductCollection,
-    };
-    const createSellCollection = await sellCollection.create(sellObj);
+    // const finalUpdate = await dsrRequest.updateOne(
+    //     { _id: new ObjectId(items._id) },
+    //     {
+    //         $set: {
+    //             orderStatus: "Completed",
+    //             requestedItems: []
+    //         },
+    //     }
+    // );
 
-    //-----------------------sendSms
-
-    if (due > 0) {
-        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}  আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় : ${parseInt(beforeDiscount)}TK, পরিশোধ: ${parseInt(totalSellPrice)}TK, বকেয়া : ${parseInt(due)}TK ।`);
-        console.log(response.data);
-    } else {
-        const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}। আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় হলো ${parseInt(beforeDiscount)}tk।`);
-        console.log(response.data);
-    }
+    // if (due > 0) {
+    //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}  আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় : ${parseInt(beforeDiscount)}TK, পরিশোধ: ${parseInt(totalSellPrice)}TK, বকেয়া : ${parseInt(due)}TK ।`);
+    //     console.log(response.data);
+    // } else {
+    //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}। আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় হলো ${parseInt(beforeDiscount)}tk।`);
+    //     console.log(response.data);
+    // }
 
 
-    res.send(sellObj);
+    res.send("finalUpdate");
 });
 
 router.get("/", async (req, res) => {
@@ -282,7 +297,7 @@ router.get('/login', async (req, res) => {
     const userEmail = req.query.userEmail;
     const userPassword = req.query.userPassword;
     console.log(userEmail, userPassword);
-    const user = await userCollection.findOne({ email: userEmail, password: userPassword, userType: "DSR"});
+    const user = await userCollection.findOne({ email: userEmail, password: userPassword, userType: "DSR" });
     console.log(user);
     if (user) {
         return res.status(200).send(user);
