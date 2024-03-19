@@ -7,6 +7,7 @@ const userCollection = require("../schemas/userSchemas");
 const moneyInfo = require("../schemas/moneySchemas");
 const cardCollection = require("../schemas/cardSchema");
 const { ObjectId } = require("mongodb");
+const counter = require("../schemas/count");
 
 router.get("/", async (req, res) => {
     const requestedData = await dsrRequest.find({
@@ -111,6 +112,47 @@ router.post("/acceptDue", async (req, res) => {
     res.send("update")
 });
 
+// -----------------------randomNumberGenaretor
+const randomNumberGenaretor = async() =>{
+    const countCollection = await counter.find();
+    let number = countCollection[0].counter;
+    number++;
+
+    const updateCounter = await counter.updateOne(
+        { ID: "counter" },
+        { $set: { counter: number } }
+    );
+
+    const numberAsString = String(number);
+
+    if(numberAsString.length === 1){
+        return number = `000${number}`
+    }
+    else if(numberAsString.length === 2){
+        return number = `00${number}`
+    }
+    else if(numberAsString.length === 3){
+        return number = `0${number}`
+    }
+    else{
+        return number = `${number}`;
+    }
+}
+
+router.get("/example", async (req, res) => {
+    const currentTimeUTC = new Date().toISOString();
+    const currentTimeDhaka = new Date(currentTimeUTC).toLocaleString('en-US', { timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true });
+    const number = await randomNumberGenaretor();
+    console.log(number);
+    const date = currentTimeUTC.substring(0, 10);
+    const data = {
+        date: date,
+        time: currentTimeDhaka
+    }
+    
+    res.send({messege: number});
+});
+
 router.post("/", async (req, res) => {
     const { dsrEmail, shopId } = req.query;
     const currentTimeUTC = new Date().toISOString();
@@ -147,16 +189,7 @@ router.get("/time", async (req, res) => {
     res.send(data)
 });
 
-router.get("/example", async (req, res) => {
-    const currentTimeUTC = new Date().toISOString();
-    const currentTimeDhaka = new Date(currentTimeUTC).toLocaleString('en-US', { timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true });
-    const date = currentTimeUTC.substring(0, 10);
-    const data = {
-        date: date,
-        time: currentTimeDhaka
-    }
-    res.send(data);
-});
+
 
 
 router.get("/searchProduct", async (req, res) => {
