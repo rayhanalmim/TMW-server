@@ -65,6 +65,7 @@ router.post("/", async (req, res) => {
             quantity: quantity,
             imageURL: imageURL,
             unitPrice: productPrice,
+            purchaseDate: date,
             productType: productType,
         };
 
