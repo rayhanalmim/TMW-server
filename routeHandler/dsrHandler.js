@@ -113,10 +113,9 @@ router.post("/acceptDue", async (req, res) => {
 
 router.post("/", async (req, res) => {
     const { dsrEmail, shopId } = req.query;
-    const utcPlus6Date = new Date().toLocaleString('en-US', { timeZone: 'Asia/Dhaka' });
-    const currentTimeDhaka = new Date(utcPlus6Date).toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Dhaka' });
-    const date = new Date().toISOString().substring(0, 10);
-
+    const currentTimeUTC = new Date().toISOString();
+    const currentTimeDhaka = new Date(currentTimeUTC).toLocaleString('en-US', { timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true });
+    const date = currentTimeUTC.substring(0, 10);
     
 
     const shop = await moneyInfo.findOne({_id: shopId});
