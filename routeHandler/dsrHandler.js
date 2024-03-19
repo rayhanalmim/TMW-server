@@ -25,6 +25,11 @@ router.get("/OrderNo", async (req, res) => {
     res.send(requestedData)
 });
 
+router.get("/orderStatus", async (req, res) => {
+    const requestedData = await dsrRequest.find({},{orderNo: 1, orderDate: 1, orderTime: 1, orderStatus: 1 });
+    res.send(requestedData)
+});
+
 router.get("/findOne", async (req, res) => {
     const reqId = req.query.reqId;
     const requestedData = await dsrRequest.findById(reqId);
