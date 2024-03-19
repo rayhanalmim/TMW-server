@@ -43,25 +43,25 @@ router.get("/findOne", async (req, res) => {
     res.send(requestedData)
 });
 
-router.get("/UpdateOne", async (req, res) => {
-    const {reqId, orderNo} = req.query;
-    const requestedData = await dsrRequest.findById(reqId);
+// router.get("/UpdateOne", async (req, res) => {
+//     const {reqId, orderNo} = req.query;
+//     const requestedData = await dsrRequest.findById(reqId);
 
-    if(!requestedData.orderNo){
-        const update = await dsrRequest.updateOne(
-            { _id: reqId },
-            {
-                $set: {
-                    orderNo: orderNo,
-                },
-            },
-            { upsert: true } // Create a new document if it doesn't exist
-        );
-         return res.send(update)
-    }
+//     if(!requestedData.orderNo){
+//         const update = await dsrRequest.updateOne(
+//             { _id: reqId },
+//             {
+//                 $set: {
+//                     orderNo: orderNo,
+//                 },
+//             },
+//             { upsert: true } // Create a new document if it doesn't exist
+//         );
+//          return res.send(update)
+//     }
 
-    res.send("")
-});
+//     res.send("")
+// });
 
 router.post("/reject", async (req, res) => {
     const reqId = req.query.reqId;
@@ -158,7 +158,7 @@ router.post("/", async (req, res) => {
     const currentTimeUTC = new Date().toISOString();
     const currentTimeDhaka = new Date(currentTimeUTC).toLocaleString('en-US', { timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true });
     const date = currentTimeUTC.substring(0, 10);
-    
+    const dueNumber = await randomNumberGenaretor();
 
     const shop = await moneyInfo.findOne({_id: shopId});
     const dsr = await userCollection.findOne({ email: dsrEmail});
@@ -167,6 +167,7 @@ router.post("/", async (req, res) => {
         dsrInfo: dsr,
         orderDate: date, 
         orderTime: currentTimeDhaka,
+        orderNo: dueNumber,
         orderStatus: "pending",
         shopInfo: shop,
         requestedItems: requestedData.cardItems,
