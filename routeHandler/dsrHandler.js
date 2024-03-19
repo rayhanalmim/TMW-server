@@ -28,7 +28,7 @@ router.get("/OrderNo", async (req, res) => {
 
 router.get("/orderStatus", async (req, res) => {
     const email = req.query.email;
-    const requestedData = await dsrRequest.find({"dsrInfo.email": email},{orderNo: 1, orderDate: 1, orderTime: 1, orderStatus: 1, _id: 0 });
+    const requestedData = await dsrRequest.find({"dsrInfo.email": email},{orderNo: 1, orderDate: 1, orderTime: 1, orderStatus: 1, _id: 0, "shopInfo.shopName": 1, requestedItems: 1, });
   
     if(requestedData.length){
         return res.send(requestedData)
