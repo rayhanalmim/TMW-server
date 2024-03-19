@@ -57,7 +57,14 @@ router.get("/", async (req, res) => {
     if(isCardExist){
         return res.send(isCardExist.cardItems)
     }else{
-        return res.status(200).send({message: 'no item found'})
+        const response = [
+            {
+                product: {
+                    productName: 'no item found',
+                }
+            }
+        ]
+        return res.status(200).send(response)
     }
 });
 
