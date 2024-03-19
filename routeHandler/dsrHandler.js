@@ -28,7 +28,12 @@ router.get("/OrderNo", async (req, res) => {
 router.get("/orderStatus", async (req, res) => {
     const email = req.query.email;
     const requestedData = await dsrRequest.find({"dsrInfo.email": email},{orderNo: 1, orderDate: 1, orderTime: 1, orderStatus: 1, _id: 0 });
-    res.send(requestedData)
+  
+    if(requestedData.length){
+        return res.send(requestedData)
+    }else{
+        return res.status(200).send({message: 'no order found'})
+    }
 });
 
 router.get("/findOne", async (req, res) => {
