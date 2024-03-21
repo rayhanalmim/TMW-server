@@ -85,6 +85,15 @@ router.post("/reject", async (req, res) => {
             },
         }
     );
+    const countCollection = await counter.find();
+    let number = countCollection[0].counter;
+    number--;
+
+    const updateCounter = await counter.updateOne(
+        { ID: "counter" },
+        { $set: { counter: number } }
+    );
+
     res.send(update)
 });
 
