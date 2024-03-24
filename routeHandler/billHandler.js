@@ -15,6 +15,15 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/shop", async (req, res) => {
+  const shopID = req.query.shopId;
+  console.log(shopID);
+  const bills = await billCollection.find({'shopInfo._id': shopID});
+  console.log(bills);
+  res.send(bills);
+});
+
+
 router.get("/findOne", async (req, res) => {
   try {
     const { billId } = req.query;
