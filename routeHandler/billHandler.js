@@ -31,7 +31,7 @@ router.post("/paid", async (req, res) => {
 
   const update = await moneyInfo.updateOne(
     { _id: new ObjectId(id) },
-    { $set: { totalDue: shop.totalDue - amout } }
+    { $set: { totalDue: shop.totalDue - parseInt(amout), totalPay: shop.totalPay + parseInt(amout) } }
   );
   res.send(update);
 });
