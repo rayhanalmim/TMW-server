@@ -269,7 +269,7 @@ router.post("/", async (req, res) => {
         {
             $set: {
                 orderStatus: "Completed",
-                requestedItems: []
+                // requestedItems: []
             },
         }
     );
