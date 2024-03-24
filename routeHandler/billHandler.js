@@ -3,6 +3,8 @@ const router = express.Router();
 const mongoose = require("mongoose");
 const Cost = require("../schemas/costSchemas.js");
 const billCollection = require("../schemas/billSchema.js");
+const moneyInfo = require("../schemas/moneySchemas.js");
+const { ObjectId } = require("mongodb");
 
 
 router.get("/", async (req, res) => {
@@ -18,16 +20,27 @@ router.get("/", async (req, res) => {
 router.get("/shop", async (req, res) => {
   const shopID = req.query.shopId;
   console.log(shopID);
-  const bills = await billCollection.find({'shopInfo._id': shopID});
+  const bills = await billCollection.find({ 'shopInfo._id': shopID });
   console.log(bills);
   res.send(bills);
+});
+
+router.post("/paid", async (req, res) => {
+  const { amout, id } = req.query;
+  const shop = await moneyInfo.findOne({ _id: new ObjectId(id) });
+
+  const update = await moneyInfo.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: { totalDue: shop.totalDue - amout } }
+  );
+  res.send(update);
 });
 
 
 router.get("/findOne", async (req, res) => {
   try {
     const { billId } = req.query;
-    const bills = await billCollection.findOne({_id: billId});
+    const bills = await billCollection.findOne({ _id: billId });
     res.send(bills);
   } catch (error) {
     console.error("Error fetching costs:", error);
