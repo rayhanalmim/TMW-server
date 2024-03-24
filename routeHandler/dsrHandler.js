@@ -107,7 +107,7 @@ router.post("/acceptDue", async (req, res) => {
         const update = await dsrRequest.updateOne(
             { 
                 _id: new ObjectId(reqId), 
-                "requestedItems.ID": ID // Match the product ID within the requestedItems array
+                "requestedItems.ID": ID 
             },
             {
                 $set: {
@@ -115,6 +115,16 @@ router.post("/acceptDue", async (req, res) => {
                 },
             }
         )
+
+        const storedProduct = await Product.findOne({ _id: new ObjectId(ID) });
+
+        const stockOutProduct = await Product.updateOne(
+            { _id: new Object(ID) },
+            { $set: { productQuantity: storedProduct.productQuantity - quantity } }
+        );
+
+        console.log('from quentity: ', stockOutProduct);
+
         console.log(update);;  
     }
 

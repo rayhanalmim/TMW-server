@@ -79,13 +79,15 @@ router.post("/", async (req, res) => {
 
         purchesProductCollection.push(obj);
 
-        const storedProduct = await Product.findOne({ _id: new ObjectId(_id) });
+        // const storedProduct = await Product.findOne({ _id: new ObjectId(_id) });
 
-        // ---------------------stockOut
-        const stockOutProduct = await Product.updateOne(
-            { _id: new Object(_id) },
-            { $set: { productQuantity: storedProduct.productQuantity - quantity } }
-        );
+        // // ---------------------stockOut
+        // const stockOutProduct = await Product.updateOne(
+        //     { _id: new Object(_id) },
+        //     { $set: { productQuantity: storedProduct.productQuantity - quantity } }
+        // );
+
+        // console.log('from quentity: ', stockOutProduct);
 
         // --------------pushPurchesProductInAgentCollection
         const update = await moneyInfo.updateOne(
