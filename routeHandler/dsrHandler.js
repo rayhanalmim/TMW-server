@@ -197,8 +197,6 @@ router.get("/time", async (req, res) => {
 });
 
 
-
-
 router.get("/searchProduct", async (req, res) => {
     const searchQuery = req.query.searchText;
     const regex = new RegExp(searchQuery, 'i');
