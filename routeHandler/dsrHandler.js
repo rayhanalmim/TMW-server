@@ -33,13 +33,15 @@ router.get("/orderStatus", async (req, res) => {
 
     if(requestedData.length){
         for (data  of requestedData) {
-            let totalOrderedItems;
+            let totalOrderedItems = 0;
             const { orderNo, orderDate, orderTime, orderStatus, shopInfo, requestedItems } = data;
 
-
+            for (const item of requestedItems) {
+                totalOrderedItems = parseInt(totalOrderedItems) + parseInt(item.productQuentity);
+            }
     
             const obj = {
-                orderNo: orderNo, orderDate: orderDate, orderTime: orderTime, orderStatus: orderStatus, shopName: shopInfo?.shopName , totalOrderedItems: requestedItems.length,
+                orderNo: orderNo, orderDate: orderDate, orderTime: orderTime, orderStatus: orderStatus, shopName: shopInfo?.shopName , totalOrderedItems,
             }
             console.log(obj);
             arrayOfObj.push(obj);
