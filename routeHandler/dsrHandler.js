@@ -41,7 +41,7 @@ router.get("/orderStatus", async (req, res) => {
             console.log(obj);
             arrayOfObj.push(obj);
         }
-        return res.send(arrayOfObj)
+        return res.send(arrayOfObj.reverse())
     }else{
         return res.status(200).send({message: 'no order found'})
     }
