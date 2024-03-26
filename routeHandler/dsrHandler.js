@@ -12,43 +12,43 @@ const counter = require("../schemas/count");
 router.get("/", async (req, res) => {
     const requestedData = await dsrRequest.find({
         $or: [
-          { orderStatus: "pending" },
-          { orderStatus: "acceptdue" }
+            { orderStatus: "pending" },
+            { orderStatus: "acceptdue" }
         ]
-      });
+    });
     res.send(requestedData)
 });
 
 router.get("/OrderNo", async (req, res) => {
     const requestedData = await dsrRequest.find(
-          { orderStatus: "Completed" }
-      );
+        { orderStatus: "Completed" }
+    );
     res.send(requestedData)
 });
 
 router.get("/orderStatus", async (req, res) => {
     const email = req.query.email;
     let arrayOfObj = [];
-    const requestedData = await dsrRequest.find({"dsrInfo.email": email},{orderNo: 1, orderDate: 1, orderTime: 1, orderStatus: 1, _id: 0, "shopInfo.shopName": 1, requestedItems: 1, });
+    const requestedData = await dsrRequest.find({ "dsrInfo.email": email }, { orderNo: 1, orderDate: 1, orderTime: 1, orderStatus: 1, _id: 0, "shopInfo.shopName": 1, requestedItems: 1, });
 
-    if(requestedData.length){
-        for (data  of requestedData) {
+    if (requestedData.length) {
+        for (data of requestedData) {
             let totalOrderedItems = 0;
             const { orderNo, orderDate, orderTime, orderStatus, shopInfo, requestedItems } = data;
 
             for (const item of requestedItems) {
                 totalOrderedItems = parseInt(totalOrderedItems) + parseInt(item.productQuentity);
             }
-    
+
             const obj = {
-                orderNo: orderNo, orderDate: orderDate, orderTime: orderTime, orderStatus: orderStatus, shopName: shopInfo?.shopName , totalOrderedItems,
+                orderNo: orderNo, orderDate: orderDate, orderTime: orderTime, orderStatus: orderStatus, shopName: shopInfo?.shopName, totalOrderedItems,
             }
             console.log(obj);
             arrayOfObj.push(obj);
         }
         return res.send(arrayOfObj.reverse())
-    }else{
-        return res.status(200).send({message: 'no order found'})
+    } else {
+        return res.status(200).send({ message: 'no order found' })
     }
 });
 
@@ -58,25 +58,6 @@ router.get("/findOne", async (req, res) => {
     res.send(requestedData)
 });
 
-// router.get("/UpdateOne", async (req, res) => {
-//     const {reqId, orderNo} = req.query;
-//     const requestedData = await dsrRequest.findById(reqId);
-
-//     if(!requestedData.orderNo){
-//         const update = await dsrRequest.updateOne(
-//             { _id: reqId },
-//             {
-//                 $set: {
-//                     orderNo: orderNo,
-//                 },
-//             },
-//             { upsert: true } // Create a new document if it doesn't exist
-//         );
-//          return res.send(update)
-//     }
-
-//     res.send("")
-// });
 
 router.post("/reject", async (req, res) => {
     const reqId = req.query.reqId;
@@ -110,9 +91,9 @@ router.post("/acceptDue", async (req, res) => {
         const { ID, quantity } = product;
 
         const update = await dsrRequest.updateOne(
-            { 
-                _id: new ObjectId(reqId), 
-                "requestedItems.ID": ID 
+            {
+                _id: new ObjectId(reqId),
+                "requestedItems.ID": ID
             },
             {
                 $set: {
@@ -121,16 +102,7 @@ router.post("/acceptDue", async (req, res) => {
             }
         )
 
-        const storedProduct = await Product.findOne({ _id: new ObjectId(ID) });
-
-        const stockOutProduct = await Product.updateOne(
-            { _id: new Object(ID) },
-            { $set: { productQuantity: storedProduct.productQuantity - quantity } }
-        );
-
-        console.log('from quentity: ', stockOutProduct);
-
-        console.log(update);;  
+        console.log(update);;
     }
 
     const update = await dsrRequest.updateOne(
@@ -147,7 +119,7 @@ router.post("/acceptDue", async (req, res) => {
 });
 
 // -----------------------randomNumberGenaretor
-const randomNumberGenaretor = async() =>{
+const randomNumberGenaretor = async () => {
     const countCollection = await counter.find();
     let number = countCollection[0].counter;
     number++;
@@ -159,16 +131,16 @@ const randomNumberGenaretor = async() =>{
 
     const numberAsString = String(number);
 
-    if(numberAsString.length === 1){
+    if (numberAsString.length === 1) {
         return number = `000${number}`
     }
-    else if(numberAsString.length === 2){
+    else if (numberAsString.length === 2) {
         return number = `00${number}`
     }
-    else if(numberAsString.length === 3){
+    else if (numberAsString.length === 3) {
         return number = `0${number}`
     }
-    else{
+    else {
         return number = `${number}`;
     }
 }
@@ -183,8 +155,8 @@ router.get("/example", async (req, res) => {
         date: date,
         time: currentTimeDhaka
     }
-    
-    res.send({messege: number});
+
+    res.send({ messege: number });
 });
 
 router.post("/", async (req, res) => {
@@ -194,12 +166,12 @@ router.post("/", async (req, res) => {
     const date = currentTimeUTC.substring(0, 10);
     const dueNumber = await randomNumberGenaretor();
 
-    const shop = await moneyInfo.findOne({_id: shopId});
-    const dsr = await userCollection.findOne({ email: dsrEmail});
+    const shop = await moneyInfo.findOne({ _id: shopId });
+    const dsr = await userCollection.findOne({ email: dsrEmail });
     const requestedData = await cardCollection.findOne({ user: dsrEmail });
     const obj = {
         dsrInfo: dsr,
-        orderDate: date, 
+        orderDate: date,
         orderTime: currentTimeDhaka,
         orderNo: dueNumber,
         orderStatus: "pending",
@@ -210,7 +182,7 @@ router.post("/", async (req, res) => {
     const clearCardData = await cardCollection.deleteOne({ user: dsrEmail });
     const push = await dsrRequest.create(obj);
 
-    res.status(200).send({message: "Request send successfully"});
+    res.status(200).send({ message: "Request send successfully" });
 });
 
 router.get("/time", async (req, res) => {
@@ -244,7 +216,7 @@ router.get("/shop", async (req, res) => {
     // const searchQuery = req.query.searchText;
     const { dsrEmail } = req.query;
 
-    const dsr = await userCollection.findOne({ email: dsrEmail});
+    const dsr = await userCollection.findOne({ email: dsrEmail });
 
     const regex = new RegExp(dsr.ifDsrArea, 'i');
 
