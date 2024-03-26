@@ -33,7 +33,10 @@ router.get("/orderStatus", async (req, res) => {
 
     if(requestedData.length){
         for (data  of requestedData) {
+            let totalOrderedItems;
             const { orderNo, orderDate, orderTime, orderStatus, shopInfo, requestedItems } = data;
+
+
     
             const obj = {
                 orderNo: orderNo, orderDate: orderDate, orderTime: orderTime, orderStatus: orderStatus, shopName: shopInfo?.shopName , totalOrderedItems: requestedItems.length,

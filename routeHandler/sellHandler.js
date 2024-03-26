@@ -50,7 +50,20 @@ router.post("/", async (req, res) => {
     for (const item of items.requestedItems) {
         const {
             quantity,
+            ID
         } = item;
+
+        const updateSTOCK = await dsrRequest.updateOne(
+            { 
+                _id: new ObjectId(items._id), 
+                "requestedItems.ID": ID 
+            },
+            {
+                $set: {
+                    "requestedItems.$.productQuentity": quantity,
+                },
+            }
+        )
 
         const {
             _id,
