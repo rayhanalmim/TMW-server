@@ -253,5 +253,43 @@ router.get("/shopById", async (req, res) => {
 });
 
 
+router.post("/adminRequest", async (req, res) => {
+    const { dsrID, shopId } = req.query;
+    const itemsData = req.body;
+    const currentTimeUTC = new Date().toISOString();
+    const currentTimeDhaka = new Date(currentTimeUTC).toLocaleString('en-US', { timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true });
+    const date = currentTimeUTC.substring(0, 10);
+
+    if(!dsrID){
+        return res.status(201).send({message: "please select a DSR"})
+    }
+    if(!shopId){
+        return res.status(202).send({message: "please select a shop"})
+    }
+
+    const dueNumber = await randomNumberGenaretor();
+    const shop = await moneyInfo.findOne({ _id: shopId });
+    const dsr = await userCollection.findOne({ _id: dsrID });
+
+    const obj = {
+        dsrInfo: dsr,
+        orderDate: date,
+        orderTime: currentTimeDhaka,
+        orderNo: dueNumber,
+        orderStatus: "pending",
+        shopInfo: shop,
+        requestedItems: itemsData,
+    }
+
+    const update = await Product.updateMany(
+        { isAddedInCard: true },
+        { $set: { isAddedInCard: false } }
+    );
+
+    const push = await dsrRequest.create(obj);
+    res.status(200).send({ message: "Request send successfully" });
+});
+
+
 
 module.exports = router;
