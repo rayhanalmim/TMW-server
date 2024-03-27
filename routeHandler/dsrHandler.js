@@ -26,6 +26,13 @@ router.get("/OrderNo", async (req, res) => {
     res.send(requestedData)
 });
 
+router.get("/dsr", async (req, res) => {
+    const dsr = await userCollection.find(
+        { userType: "DSR" }
+    );
+    res.send(dsr)
+});
+
 router.get("/orderStatus", async (req, res) => {
     const email = req.query.email;
     let arrayOfObj = [];
