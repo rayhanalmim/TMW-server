@@ -133,4 +133,10 @@ router.put('/removeToAdminCard', async(req, res)=>{
     res.send(update);
 })
 
+router.get('/getAdminCard', async(req, res)=>{
+    const card = await Product.find({ isAddedInCard: true }, {sellCollections: 0});
+      console.log(card);
+    res.send(card);
+})
+
 module.exports = router;
