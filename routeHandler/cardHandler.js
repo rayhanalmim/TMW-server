@@ -122,4 +122,15 @@ router.put('/addToAdminCard', async(req, res)=>{
     res.send(update);
 })
 
+router.put('/removeToAdminCard', async(req, res)=>{
+    const {productId } = req.query;
+    const update = await Product.updateOne(
+        { _id: new ObjectId(productId) },
+        { $set: { isAddedInCard: false } },
+        { upsert: true } // Create a new document if it doesn't exist
+    );
+      console.log(update);
+    res.send(update);
+})
+
 module.exports = router;
