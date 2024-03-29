@@ -103,12 +103,12 @@ router.post("/", async (req, res) => {
         console.log('from quentity: ', stockOutProduct);
 
         // --------------pushPurchesProductInAgentCollection
-        const update = await moneyInfo.updateOne(
-            { _id: new ObjectId(items.shopInfo._id) },
-            {
-                $push: { purchesProductCollection: obj },
-            }
-        );
+        // const update = await moneyInfo.updateOne(
+        //     { _id: new ObjectId(items.shopInfo._id) },
+        //     {
+        //         $push: { purchesProductCollection: obj },
+        //     }
+        // );
         const updateProductCollection = await Product.updateOne(
             { _id: _id },
             { $push: { sellCollections: sellCollectionObj } },
