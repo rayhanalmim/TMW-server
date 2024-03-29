@@ -218,16 +218,20 @@ router.get("/searchProduct", async (req, res) => {
 });
 
 router.get("/shop", async (req, res) => {
-    // const searchQuery = req.query.searchText;
     const { dsrEmail } = req.query;
-
+    let filteredResults;
+    
     const dsr = await userCollection.findOne({ email: dsrEmail });
-
-    const regex = new RegExp(dsr.ifDsrArea, 'i');
-
     const shops = await moneyInfo.find();
 
-    const filteredResults = shops.filter((product) => regex.test(product.shopArea));
+    if(dsr.email === 'zakir7275@gmail.com' || dsr.email === 'mdhasanfakir0011@gmail.com'){
+        const regexUttara = new RegExp('uttora', 'i');
+        const regexMirpur = new RegExp('mirpur', 'i');
+        filteredResults = shops.filter((product) => regexUttara.test(product.shopArea) || regexMirpur.test(product.shopArea));
+    }else{
+        const regex = new RegExp(dsr.ifDsrArea, 'i');
+        filteredResults = shops.filter((product) => regex.test(product.shopArea));
+    }
 
     filteredResults.sort((a, b) => a.shopArea.localeCompare(b.shopArea));
 
