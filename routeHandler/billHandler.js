@@ -26,14 +26,27 @@ router.get("/shop", async (req, res) => {
 });
 
 router.post("/paid", async (req, res) => {
-  const { amout, id } = req.query;
-  const shop = await moneyInfo.findOne({ _id: new ObjectId(id) });
+  const { amount, billId, shopId } = req.query;
+  const shop = await moneyInfo.findOne({ _id: new ObjectId(shopId) });
+
+  const bill = await billCollection.findOne({_id: new ObjectId(billId)});
+
+  console.log(shop , bill , amount);
+
+  if(parseInt(bill.due) < parseInt(amount)){
+    return res.status(201).send({message: "invalid amout"})
+  }
+
+  const updateBill = await billCollection.updateOne(
+    { _id: new ObjectId(billId) },
+    { $set: { due: parseInt(bill.due) - parseInt(amount) } }
+  );
 
   const update = await moneyInfo.updateOne(
-    { _id: new ObjectId(id) },
-    { $set: { totalDue: shop.totalDue - parseInt(amout), totalPay: shop.totalPay + parseInt(amout) } }
+    { _id: new ObjectId(shopId) },
+    { $set: { totalDue: shop.totalDue - parseInt(amount), totalPay: shop.totalPay + parseInt(amount) } }
   );
-  res.send(update);
+  res.send("update");
 });
 
 
