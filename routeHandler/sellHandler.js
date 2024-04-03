@@ -46,79 +46,7 @@ router.post("/", async (req, res) => {
         }
     }
 
-    // ---------------stockOutAndOtherFunctionality:
-    for (const item of items.requestedItems) {
-        const {
-            quantity,
-            ID
-        } = item;
-
-        const updateSTOCK = await dsrRequest.updateOne(
-            { 
-                _id: new ObjectId(items._id), 
-                "requestedItems.ID": ID 
-            },
-            {
-                $set: {
-                    "requestedItems.$.productQuentity": quantity,
-                },
-            }
-        )
-
-        const {
-            _id,
-            productName,
-            productPrice,
-            imageURL,
-            productType,
-        } = item.product;
-
-        const obj = {
-            productName: productName,
-            quantity: quantity,
-            imageURL: imageURL,
-            unitPrice: productPrice,
-            purchaseDate: date,
-            productType: productType,
-        };
-
-        const sellCollectionObj = {
-            date: date,
-            to: items.shopInfo,
-            via: items.dsrInfo,
-            quantity: quantity,
-            unitPrice: productPrice,
-        }
-
-        purchesProductCollection.push(obj);
-
-        const storedProduct = await Product.findOne({ _id: new ObjectId(_id) });
-
-        // ---------------------stockOut
-        const stockOutProduct = await Product.updateOne(
-            { _id: new Object(_id) },
-            { $set: { productQuantity: storedProduct.productQuantity - quantity } }
-        );
-
-        console.log('from quentity: ', stockOutProduct);
-
-        // --------------pushPurchesProductInAgentCollection
-        // const update = await moneyInfo.updateOne(
-        //     { _id: new ObjectId(items.shopInfo._id) },
-        //     {
-        //         $push: { purchesProductCollection: obj },
-        //     }
-        // );
-        const updateProductCollection = await Product.updateOne(
-            { _id: _id },
-            { $push: { sellCollections: sellCollectionObj } },
-            { upsert: true } // Create a new document if it doesn't exist
-        );
-            console.log(updateProductCollection);
-
-        
-    }
-
+   
 
     // -------------------addMonthlyYearlyAndTotal
     const currentDayCollection = await companyInfo.findOne({
@@ -287,6 +215,28 @@ router.post("/", async (req, res) => {
         }
     );
 
+    // todo - update dsr product status quantity
+    // //  ---------------stockOutAndOtherFunctionality:
+     for (const item of items?.requestedItems) {
+        const {
+            quantity,
+        } = item;
+
+        const {
+            _id,
+        } = item?.product;
+
+        const storedProduct = await Product.findOne({ _id: new ObjectId(_id) });
+
+        // ---------------------stockOut
+        const stockOutProduct = await Product.updateOne(
+            { _id: new Object(_id) },
+            { $set: { productQuantity: storedProduct?.productQuantity - quantity } }
+        );
+        
+    }
+
+
     // if (due > 0) {
     //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}  আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় : ${parseInt(beforeDiscount)}TK, পরিশোধ: ${parseInt(totalSellPrice)}TK, বকেয়া : ${parseInt(due)}TK ।`);
     //     console.log(response.data);
@@ -296,7 +246,7 @@ router.post("/", async (req, res) => {
     // }
 
 
-    res.send("finalUpdate");
+    res.send(storeBill);
 });
 
 router.get("/", async (req, res) => {
