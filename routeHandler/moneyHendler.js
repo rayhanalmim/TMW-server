@@ -26,16 +26,16 @@ router.get("/singleShop", async (req, res) => {
   }
 });
 
-// router.get("/singleShop", async (req, res) => {
-//   try {
-//     const id = req.query.id;
-//     const updateShop = await Product.Money({ _id: id }, { $set: req.body });
-//     res.send(updateShop);
-//   } catch (error) {
-//     console.error("Error fetching costs:", error);
-//     res.status(500).send({ error: "Internal Server Error" });
-//   }
-// });
+router.put("/updateShop", async (req, res) => {
+  try {
+    const id = req.query.id;
+    const updateShop = await Money.updateOne({ _id: id }, { $set: req.body });
+    res.send(updateShop);
+  } catch (error) {
+    console.error("Error fetching costs:", error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
 
 router.post("/", async (req, res) => {
   try {
