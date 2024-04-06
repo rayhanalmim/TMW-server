@@ -215,7 +215,6 @@ router.post("/", async (req, res) => {
         }
     );
 
-    // todo - update dsr product status quantity
     // //  ---------------stockOutAndOtherFunctionality:
      for (const item of items?.requestedItems) {
         const {
@@ -236,18 +235,60 @@ router.post("/", async (req, res) => {
         
     }
 
-
-    // if (due > 0) {
-    //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}  আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় : ${parseInt(beforeDiscount)}TK, পরিশোধ: ${parseInt(totalSellPrice)}TK, বকেয়া : ${parseInt(due)}TK ।`);
-    //     console.log(response.data);
-    // } else {
-    //     const response = await axios.post(`http://bulksmsbd.net/api/smsapi?api_key=${process.env.SMS_API_KEY}&type=text&number=${agent.phoneNo}&senderid=${process.env.SENDER_ID}&message=প্রিয় গ্রাহক, ${agent.displayName}। আপনাকে M/s Humayun Traders থেকে ধন্যবাদ। আপনার মোট ক্রয় হলো ${parseInt(beforeDiscount)}tk।`);
-    //     console.log(response.data);
-    // }
-
-
     res.send(storeBill);
 });
+
+
+
+router.post("/stockHandle", async (req, res) => {
+    const items = req.body;
+    const date = new Date().toISOString().substring(0, 10);
+
+    for (const item of items.requestedItems) {
+        const {
+            quantity,
+            ID
+        } = item;
+
+        const updateSTOCK = await dsrRequest.updateOne(
+            { 
+                _id: new ObjectId(items._id), 
+                "requestedItems.ID": ID 
+            },
+            {
+                $set: {
+                    "requestedItems.$.productQuentity": quantity,
+                },
+            }
+        )
+
+        const {
+            _id,
+            productName,
+            productPrice,
+            imageURL,
+            productType,
+        } = item.product;
+
+        const sellCollectionObj = {
+            date: date,
+            to: items.shopInfo,
+            via: items.dsrInfo,
+            quantity: quantity,
+            unitPrice: productPrice,
+        }
+
+        const updateProductCollection = await Product.updateOne(
+            { _id: _id },
+            { $push: { sellCollections: sellCollectionObj } },
+            { upsert: true } // Create a new document if it doesn't exist
+        );
+        
+    }
+
+    res.send({messege: "done"});
+});
+
 
 router.get("/", async (req, res) => {
     const sellProduct = await sellCollection.find();
