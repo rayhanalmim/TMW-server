@@ -9,8 +9,9 @@ const { ObjectId } = require("mongodb");
 
 router.get("/", async (req, res) => {
   try {
-    const bills = await billCollection.find();
-    res.send(bills);
+    const latestBills = await billCollection.find()
+      .limit(50); // Limit the result to the latest 30 bills
+    res.send(latestBills);
   } catch (error) {
     console.error("Error fetching costs:", error);
     res.status(500).send({ error: "Internal Server Error" });
@@ -29,12 +30,12 @@ router.post("/paid", async (req, res) => {
   const { amount, billId, shopId } = req.query;
   const shop = await moneyInfo.findOne({ _id: new ObjectId(shopId) });
 
-  const bill = await billCollection.findOne({_id: new ObjectId(billId)});
+  const bill = await billCollection.findOne({ _id: new ObjectId(billId) });
 
-  console.log(shop , bill , amount);
+  console.log(shop, bill, amount);
 
-  if(parseInt(bill.due) < parseInt(amount)){
-    return res.status(201).send({message: "invalid amout"})
+  if (parseInt(bill.due) < parseInt(amount)) {
+    return res.status(201).send({ message: "invalid amout" })
   }
 
   const updateBill = await billCollection.updateOne(
