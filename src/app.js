@@ -41,7 +41,6 @@ app.use("/sell", sellHandler);
 app.use("/money", moneyHandler); ///////shop
 app.use("/dsrRequ", dsrRequ); 
 app.use("/bill", billHandler); 
-// --------------------------------------localApi-------------------------------------------
 
 app.get("/", (req, res) => {
   res.send("Database server is  connected");
