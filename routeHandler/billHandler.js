@@ -6,21 +6,6 @@ const billCollection = require("../schemas/billSchema.js");
 const moneyInfo = require("../schemas/moneySchemas.js");
 const { ObjectId } = require("mongodb");
 
-
-// router.get("/", async (req, res) => {
-//   try {
-//     const latestBills = await billCollection.find()
-//     .sort({ _id: -1 }) // Sort by descending order to get the latest first
-//       .limit(45); // Limit the result to the latest 30 bills
-//       const reversedBills = latestBills.reverse(); // Reverse the order of bills
-
-//       res.send(reversedBills); // Send the reversed data
-//   } catch (error) {
-//     console.error("Error fetching costs:", error);
-//     res.status(500).send({ error: "Internal Server Error" });
-//   }
-// });
-
 router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Current page, default to 1
