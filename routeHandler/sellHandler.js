@@ -88,7 +88,7 @@ router.post("/", async (req, res) => {
         const updateResult = await companyInfo.updateOne(updateQuery, {
             $set: {
                 "dailySellAmmount.$.totalAmmount":
-                    parseInt(currentDayCollection.dailySellAmmount[0].totalAmmount) +
+                    parseInt(currentDayCollection.dailySellAmmount[currentDayCollection.dailySellAmmount.length - 1].totalAmmount) +
                     parseInt(totalPrice),
             },
         });
@@ -118,7 +118,7 @@ router.post("/", async (req, res) => {
         const updateResult = await companyInfo.updateOne(updateQuery, {
             $set: {
                 "monthlySellAmount.$.totalAmmount":
-                    parseInt(currentMonthCollection.monthlySellAmount[0].totalAmmount) +
+                    parseInt(currentMonthCollection.monthlySellAmount[currentMonthCollection.monthlySellAmount.length - 1].totalAmmount) +
                     parseInt(totalPrice),
             },
         });
@@ -148,7 +148,7 @@ router.post("/", async (req, res) => {
         const updateResult = await companyInfo.updateOne(updateQuery, {
             $set: {
                 "yearlySellAmount.$.totalAmount":
-                    parseInt(currentYearCollection.yearlySellAmount[0].totalAmount) +
+                    parseInt(currentYearCollection.yearlySellAmount[currentYearCollection.yearlySellAmount.length - 1].totalAmount) +
                     parseInt(totalPrice),
             },
         });
