@@ -9,8 +9,8 @@ const { ObjectId } = require("mongodb");
 router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Current page, default to 1
-    const limit = parseInt(req.query.limit) || 10; // Records per page, default to 10
-    const skip = (page - 1) * limit; // Number of records to skip
+    const limit = parseInt(req.query.limit) || 10; 
+    const skip = (page - 1) * limit; 
 
     // Get total number of records for pagination metadata
     const totalRecords = await billCollection.countDocuments({});
