@@ -10,6 +10,7 @@ const dsrRequest = require("../schemas/dsrSchema.js");
 const Product = require("../schemas/productSchemas.js");
 const sellCollection = require("../schemas/sellCollection.js");
 const userCollection = require("../schemas/userSchemas.js");
+const moneyInfo = require("../schemas/moneySchemas.js");
 
 router.get("/getCost", async (req, res) => {
   try {
@@ -23,7 +24,7 @@ router.get("/getCost", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const data = await userCollection.find();
+  const data = await counter.find({},{_id: 0});
   res.send(data);
 });
 

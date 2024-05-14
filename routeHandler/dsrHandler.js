@@ -10,14 +10,49 @@ const { ObjectId } = require("mongodb");
 const counter = require("../schemas/count");
 
 router.get("/", async (req, res) => {
-    const requestedData = await dsrRequest.find({
-        $or: [
-            { orderStatus: "pending" },
-            { orderStatus: "acceptdue" }
-        ]
-    });
-    res.send(requestedData)
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // Default limit to 5 items per page
+  
+    try {
+        // Get the total count of items
+        const totalCount = await dsrRequest.countDocuments({
+            $or: [
+                { orderStatus: "pending" },
+                { orderStatus: "acceptdue" }
+            ],
+            orderStatus: { $ne: "completed" } // Exclude documents with orderStatus: "completed"
+        });
+  
+        // Calculate the starting index based on the total count and requested page
+        const startIndex = Math.max(0, totalCount - page * limit);
+        const endIndex = startIndex + limit;
+  
+        // Fetch the data with the calculated indexes
+        let requestedData = await dsrRequest
+            .find({
+                $or: [
+                    { orderStatus: "pending" },
+                    { orderStatus: "acceptdue" }
+                ],
+                orderStatus: { $ne: "completed" } // Exclude documents with orderStatus: "completed"
+            })
+            .skip(startIndex)
+            .limit(limit);
+  
+        // Reverse the order of the fetched data
+        requestedData = requestedData.reverse();
+  
+        res.json(requestedData);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).json({ message: "Server error" });
+    }
 });
+
+  
+  
+  
+
 
 router.get("/OrderNo", async (req, res) => {
     const requestedData = await dsrRequest.find(
